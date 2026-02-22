@@ -160,7 +160,7 @@ This prototype clarified the core architecture.
 
 I sketched a basic architecture to visualize the data flow:
 
-![System Architecture](Design%20Diagrams/architecture.png)
+
 
 The flow is:
 1. **User (Browser)** → Inputs options, criteria, weights

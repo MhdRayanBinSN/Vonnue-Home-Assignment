@@ -1,0 +1,25 @@
+Date,Type,Platform,Query/Prompt
+Feb 15,AI Prompt,ChatGPT,Understand these problem statement and explain to a CSE student
+Feb 15,AI Prompt,ChatGPT,Explain about decision companion system with example
+Feb 16,AI Prompt,ChatGPT,Do I need to create any kind of document before executing plan like SRS
+Feb 16,AI Prompt,ChatGPT,Means SRS or approach doc or any other
+Feb 16,AI Prompt,ChatGPT,Existing DSC that is already built and using
+Feb 16,AI Prompt,ChatGPT,From that problem statement and requirements we need to select a specific domain or generalize method
+Feb 16,AI Prompt,ChatGPT,Which is best for our current expectations
+Feb 17,AI Prompt,ChatGPT,Give summary about the document that needed to build a DSC (uploaded DSS.pdf)
+Feb 17,AI Prompt,ChatGPT,Existing projects that built
+Feb 18,AI Prompt,ChatGPT,Is backend needed for this project
+Feb 18,AI Prompt,ChatGPT,Is decision tree or normal maths logic algos are best
+Feb 18,AI Prompt,ChatGPT,List the algorithm and pros and cons
+Feb 18,Search,Google,Decision companion system
+Feb 18,Search,Google,Articles about DSS
+Feb 18,Search,Google,Research papers decision support system
+Feb 18,Search,YouTube,Decision companion system
+Feb 18,Search,Reddit/Stack Overflow,Decision companion system built for technical round in job interviews
+Feb 19,AI Prompt,VS Code / Antigravity,"Build a basic decision companion system with NextJs (requirements: Pleasing UI, Accept multiple options, Accept criteria with weights, Process and evaluate options, Provide ranked recommendation)"
+Feb 19,AI Prompt,VS Code,"Fix the errors in UI, I think it might be an importing issue"
+Feb 19,AI Prompt,VS Code,Optimize the code
+Feb 19,AI Prompt,VS Code,"Design a clean architecture separating: UI, decision engine, data handling - keep it modular and scalable"
+Feb 19,AI Prompt,VS Code,Provide a conventional commit msg
+Feb 21,AI Prompt,ChatGPT,Give the ideas of my research log for better arrangement and readability
+Feb 21,AI Prompt,VS Code,"How to create a professional research log with my existing research log, currently it is messy and difficult to insert updates"

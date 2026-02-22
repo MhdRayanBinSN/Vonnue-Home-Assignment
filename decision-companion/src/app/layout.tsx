@@ -1,37 +1,27 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Decision Companion",
-  description: "Make smarter choices with AI-assisted decision matrix",
-};
-
-import { Navbar } from "@/components/layout/Navbar";
+  title: 'Decision Companion System',
+  description: 'A smart system to help you make better decisions using multi-criteria analysis',
+  keywords: ['decision making', 'MCDM', 'weighted scoring', 'WSM', 'decision support'],
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900 min-h-screen`}
-      >
-        <Navbar />
-        {children}
+      <body className={inter.className}>
+        <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
+          {children}
+        </div>
       </body>
     </html>
-  );
+  )
 }

@@ -71,6 +71,15 @@
 | AI Prompt | VS Code | In type and platform must be selectable and also automatically add these prompts to that log |
 | AI Prompt | VS Code | Add above typed prompts to Excel and MD file |
 
+### Feb 22
+
+| Type | Platform | Query/Prompt |
+|------|----------|--------------||
+| AI Prompt | VS Code | What we done in this project - is it generalized or domain specific |
+| AI Prompt | VS Code | What is MCDM algorithms, is there any other algorithm like these |
+| AI Prompt | VS Code | I mean in DSC there is MCDM algorithm, is there any algorithm like MCDM |
+| AI Prompt | VS Code | Is there any algorithm better than MCDM |
+
 ---
 
 ## References
@@ -88,15 +97,12 @@
 
 | AI Suggestion | Action | Reason |
 |---------------|--------|--------|
-| Use WSM, WPM, TOPSIS algorithms | Accepted | Good balance of simplicity and sophistication |
-| Implement AHP algorithm | Rejected | Requires pairwise comparisons - too complex for UI |
-| Use Redux for state management | Rejected | Overkill for this project size |
-| Use React Context + useReducer | Accepted | Simple and sufficient for the scope |
-| Use Recharts for visualization | Accepted | Easy React integration |
-| Add backend/database | Rejected | Not required for the assignment scope |
-| TypeScript interfaces structure | Modified | Changed property names, added benefit/cost type field |
-| Algorithm variable naming | Modified | Changed from math notation (r_ij) to readable names |
-| Use fuzzy MCDM | Rejected | Too advanced for current requirements |
+| Use MCDM algorithms (WSM, WPM, TOPSIS) | Accepted | Transparent, deterministic, explainable |
+| Implement AHP algorithm | Rejected | Pairwise comparisons increase UI complexity |
+| Use Next.js + TypeScript | Accepted | Modern stack, good for interactive UI |
+| Not Needed backend/database for these project| Accepted | Not needed for assignment scope |
+| Use Redux for state | Rejected | Overkill, used Context + useReducer instead |
+| Add sensitivity analysis | Accepted | Shows if decision is robust to weight changes |
 
 ---
 

@@ -1,71 +1,131 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
+'use client';
 
-export default function Home() {
+import React from 'react';
+import { AppProvider, useApp } from '@/lib/context';
+import { StepIndicator } from '@/components/StepIndicator';
+import { OptionsStep } from '@/components/OptionsStep';
+import { CriteriaStep } from '@/components/CriteriaStep';
+import { ScoringStep } from '@/components/ScoringStep';
+import { ResultsStep } from '@/components/ResultsStep';
+import { createSampleProblem } from '@/lib/decision-engine';
+import { Lightbulb, Play, Sparkles, Github, HelpCircle } from 'lucide-react';
+
+function DecisionCompanion() {
+  const { state, dispatch } = useApp();
+  const { currentStep, problem } = state;
+
+  const loadSampleProblem = () => {
+    const sample = createSampleProblem();
+    dispatch({ type: 'SET_PROBLEM', payload: sample });
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 0:
+        return <OptionsStep />;
+      case 1:
+        return <CriteriaStep />;
+      case 2:
+        return <ScoringStep />;
+      case 3:
+        return <ResultsStep />;
+      default:
+        return <OptionsStep />;
+    }
+  };
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Abstract Background Orbs */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[128px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[128px] pointer-events-none" />
-
-      <div className="max-w-4xl text-center space-y-12 relative z-10">
-        <div className="space-y-6 animate-fade-in">
-          <div className="inline-block px-4 py-1.5 bg-white/10 border border-white/10 backdrop-blur-md rounded-full text-sm font-medium text-blue-200 mb-4 shadow-xl">
-            ✨ Analysis Paralysis? Solved.
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-800">Decision Companion</h1>
+                <p className="text-xs text-slate-500">Make better decisions with data</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              {problem.options.length === 0 && (
+                <button
+                  onClick={loadSampleProblem}
+                  className="inline-flex items-center px-3 py-2 text-sm bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Load Example
+                </button>
+              )}
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                title="View on GitHub"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-white to-purple-200 pb-2">
-            Decision<span className="text-blue-400">Companion</span>
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Make smarter, data-driven choices with our AI-assisted weighted decision matrix.
-            Compare options, analyze trade-offs, and get clear explanations.
-          </p>
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left animate-fade-in px-4">
-          <FeatureCard
-            icon="⚖️"
-            title="Define Criteria"
-            description="Set what matters most to you (e.g., Price, Speed) and assign weights."
-          />
-          <FeatureCard
-            icon="⭐"
-            title="Rate Options"
-            description="Score each option against your criteria. See the math work for you."
-          />
-          <FeatureCard
-            icon="💡"
-            title="Get Clarity"
-            description="Receive a ranked list and a detailed 'Why' explanation for the winner."
-          />
-        </div>
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Decision Title */}
+        {problem.options.length > 0 && (
+          <div className="text-center mb-6">
+            <input
+              type="text"
+              value={problem.title}
+              onChange={(e) => dispatch({ type: 'UPDATE_TITLE', payload: e.target.value })}
+              className="text-2xl font-bold text-slate-800 bg-transparent border-none text-center focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-lg px-4 py-2"
+              placeholder="Name your decision..."
+            />
+          </div>
+        )}
 
-        <div className="pt-8 animate-fade-in-up flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link href="/decision/new">
-            <Button className="px-8 py-4 text-lg h-auto shadow-[0_0_30px_-5px_rgba(59,130,246,0.5)] hover:shadow-[0_0_40px_-5px_rgba(59,130,246,0.6)] hover:-translate-y-1 transition-all bg-gradient-to-r from-blue-600 to-indigo-600 border-none">
-              Start a New Decision &rarr;
-            </Button>
-          </Link>
-          <Link href="/decision/new?demo=startup">
-            <Button variant="secondary" className="px-8 py-4 text-lg h-auto bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 backdrop-blur-sm">
-              Try a Demo Case
-            </Button>
-          </Link>
+        {/* Step Indicator */}
+        <StepIndicator />
+
+        {/* Current Step Content */}
+        <div className="bg-slate-50 rounded-2xl p-6 md:p-8">
+          {renderCurrentStep()}
         </div>
-      </div>
-    </main>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white mt-auto">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center text-sm text-slate-500">
+              <Lightbulb className="w-4 h-4 mr-2" />
+              <span>
+                Built with <strong>Weighted Sum Model (WSM)</strong> - Multi-Criteria Decision Making
+              </span>
+            </div>
+            <div className="flex items-center space-x-4 text-sm text-slate-500">
+              <a href="#" className="hover:text-primary-600 transition-colors flex items-center">
+                <HelpCircle className="w-4 h-4 mr-1" />
+                How it works
+              </a>
+              <span>•</span>
+              <span>Decision Companion System v1.0</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
 
-function FeatureCard({ title, description, icon }: { title: string, description: string, icon: string }) {
+export default function Home() {
   return (
-    <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 hover:border-white/20 transition-all duration-300 group">
-      <CardContent className="p-6">
-        <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{icon}</div>
-        <h3 className="font-semibold text-lg text-white mb-2">{title}</h3>
-        <p className="text-gray-400 leading-relaxed text-sm">{description}</p>
-      </CardContent>
-    </Card>
+    <AppProvider>
+      <DecisionCompanion />
+    </AppProvider>
   );
 }

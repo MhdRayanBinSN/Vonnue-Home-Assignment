@@ -1,0 +1,305 @@
+'use client';
+
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import { 
+  DecisionProblem, 
+  Option, 
+  Criterion, 
+  DecisionResult,
+  DecisionMethod,
+} from './types';
+import { generateId, createEmptyProblem } from './decision-engine';
+
+/**
+ * Application State
+ */
+interface AppState {
+  problem: DecisionProblem;
+  result: DecisionResult | null;
+  selectedMethod: DecisionMethod;
+  currentStep: number; // 0: Options, 1: Criteria, 2: Scoring, 3: Results
+  isAnalyzing: boolean;
+  error: string | null;
+}
+
+/**
+ * Action Types
+ */
+type AppAction =
+  | { type: 'SET_PROBLEM'; payload: DecisionProblem }
+  | { type: 'UPDATE_TITLE'; payload: string }
+  | { type: 'UPDATE_DESCRIPTION'; payload: string }
+  | { type: 'ADD_OPTION'; payload: Option }
+  | { type: 'UPDATE_OPTION'; payload: Option }
+  | { type: 'DELETE_OPTION'; payload: string }
+  | { type: 'ADD_CRITERION'; payload: Criterion }
+  | { type: 'UPDATE_CRITERION'; payload: Criterion }
+  | { type: 'DELETE_CRITERION'; payload: string }
+  | { type: 'UPDATE_SCORE'; payload: { optionId: string; criterionId: string; score: number } }
+  | { type: 'SET_METHOD'; payload: DecisionMethod }
+  | { type: 'SET_STEP'; payload: number }
+  | { type: 'SET_RESULT'; payload: DecisionResult }
+  | { type: 'SET_ANALYZING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'RESET' };
+
+/**
+ * Initial State
+ */
+const initialState: AppState = {
+  problem: createEmptyProblem('My Decision'),
+  result: null,
+  selectedMethod: 'wsm',
+  currentStep: 0,
+  isAnalyzing: false,
+  error: null,
+};
+
+/**
+ * Reducer
+ */
+function appReducer(state: AppState, action: AppAction): AppState {
+  switch (action.type) {
+    case 'SET_PROBLEM':
+      return { ...state, problem: action.payload, result: null };
+
+    case 'UPDATE_TITLE':
+      return {
+        ...state,
+        problem: { ...state.problem, title: action.payload, updatedAt: new Date() },
+      };
+
+    case 'UPDATE_DESCRIPTION':
+      return {
+        ...state,
+        problem: { ...state.problem, description: action.payload, updatedAt: new Date() },
+      };
+
+    case 'ADD_OPTION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          options: [...state.problem.options, action.payload],
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'UPDATE_OPTION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          options: state.problem.options.map(o =>
+            o.id === action.payload.id ? action.payload : o
+          ),
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'DELETE_OPTION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          options: state.problem.options.filter(o => o.id !== action.payload),
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'ADD_CRITERION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          criteria: [...state.problem.criteria, action.payload],
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'UPDATE_CRITERION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          criteria: state.problem.criteria.map(c =>
+            c.id === action.payload.id ? action.payload : c
+          ),
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'DELETE_CRITERION':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          criteria: state.problem.criteria.filter(c => c.id !== action.payload),
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'UPDATE_SCORE':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          options: state.problem.options.map(o =>
+            o.id === action.payload.optionId
+              ? {
+                  ...o,
+                  scores: { ...o.scores, [action.payload.criterionId]: action.payload.score },
+                }
+              : o
+          ),
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'SET_METHOD':
+      return { ...state, selectedMethod: action.payload, result: null };
+
+    case 'SET_STEP':
+      return { ...state, currentStep: action.payload };
+
+    case 'SET_RESULT':
+      return { ...state, result: action.payload };
+
+    case 'SET_ANALYZING':
+      return { ...state, isAnalyzing: action.payload };
+
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+
+    case 'RESET':
+      return { ...initialState, problem: createEmptyProblem('My Decision') };
+
+    default:
+      return state;
+  }
+}
+
+/**
+ * Context
+ */
+interface AppContextValue {
+  state: AppState;
+  dispatch: React.Dispatch<AppAction>;
+  // Helper functions
+  addOption: (name: string, description?: string) => void;
+  updateOption: (option: Option) => void;
+  deleteOption: (id: string) => void;
+  addCriterion: (name: string, weight: number, type: 'benefit' | 'cost') => void;
+  updateCriterion: (criterion: Criterion) => void;
+  deleteCriterion: (id: string) => void;
+  updateScore: (optionId: string, criterionId: string, score: number) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  goToStep: (step: number) => void;
+}
+
+const AppContext = createContext<AppContextValue | undefined>(undefined);
+
+/**
+ * Provider Component
+ */
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(appReducer, initialState);
+
+  const addOption = (name: string, description?: string) => {
+    const newOption: Option = {
+      id: generateId(),
+      name,
+      description,
+      scores: {},
+    };
+    dispatch({ type: 'ADD_OPTION', payload: newOption });
+  };
+
+  const updateOption = (option: Option) => {
+    dispatch({ type: 'UPDATE_OPTION', payload: option });
+  };
+
+  const deleteOption = (id: string) => {
+    dispatch({ type: 'DELETE_OPTION', payload: id });
+  };
+
+  const addCriterion = (name: string, weight: number, type: 'benefit' | 'cost') => {
+    const newCriterion: Criterion = {
+      id: generateId(),
+      name,
+      weight,
+      type,
+    };
+    dispatch({ type: 'ADD_CRITERION', payload: newCriterion });
+  };
+
+  const updateCriterion = (criterion: Criterion) => {
+    dispatch({ type: 'UPDATE_CRITERION', payload: criterion });
+  };
+
+  const deleteCriterion = (id: string) => {
+    dispatch({ type: 'DELETE_CRITERION', payload: id });
+  };
+
+  const updateScore = (optionId: string, criterionId: string, score: number) => {
+    dispatch({ type: 'UPDATE_SCORE', payload: { optionId, criterionId, score } });
+  };
+
+  const nextStep = () => {
+    if (state.currentStep < 3) {
+      dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
+    }
+  };
+
+  const prevStep = () => {
+    if (state.currentStep > 0) {
+      dispatch({ type: 'SET_STEP', payload: state.currentStep - 1 });
+    }
+  };
+
+  const goToStep = (step: number) => {
+    if (step >= 0 && step <= 3) {
+      dispatch({ type: 'SET_STEP', payload: step });
+    }
+  };
+
+  return (
+    <AppContext.Provider
+      value={{
+        state,
+        dispatch,
+        addOption,
+        updateOption,
+        deleteOption,
+        addCriterion,
+        updateCriterion,
+        deleteCriterion,
+        updateScore,
+        nextStep,
+        prevStep,
+        goToStep,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+/**
+ * Hook to use the app context
+ */
+export function useApp() {
+  const context = useContext(AppContext);
+  if (context === undefined) {
+    throw new Error('useApp must be used within an AppProvider');
+  }
+  return context;
+}
