@@ -4,11 +4,12 @@ import React from 'react';
 import { CheckCircle, Circle, ArrowRight } from 'lucide-react';
 import { useApp } from '@/lib/context';
 
+// Steps 1-4 (step 0 is preset selection, handled separately)
 const steps = [
-  { id: 0, name: 'Options', description: 'Add your choices' },
-  { id: 1, name: 'Criteria', description: 'Define what matters' },
-  { id: 2, name: 'Scoring', description: 'Rate each option' },
-  { id: 3, name: 'Results', description: 'See recommendations' },
+  { id: 1, name: 'Add Laptops', description: 'Enter laptop options' },
+  { id: 2, name: 'Weights', description: 'Adjust importance' },
+  { id: 3, name: 'Scoring', description: 'Rate each laptop' },
+  { id: 4, name: 'Results', description: 'See recommendation' },
 ];
 
 export function StepIndicator() {
@@ -21,9 +22,9 @@ export function StepIndicator() {
     
     // Can go to next step only if current step is complete
     if (stepId === currentStep + 1) {
-      if (currentStep === 0) return state.problem.options.length >= 2;
-      if (currentStep === 1) return state.problem.criteria.length >= 1;
-      if (currentStep === 2) {
+      if (currentStep === 1) return state.problem.options.length >= 2;
+      if (currentStep === 2) return state.problem.criteria.length >= 1;
+      if (currentStep === 3) {
         // Check if all scores are filled
         for (const option of state.problem.options) {
           for (const criterion of state.problem.criteria) {
@@ -70,7 +71,7 @@ export function StepIndicator() {
                   {isCompleted ? (
                     <CheckCircle className="w-5 h-5" />
                   ) : (
-                    <span className="text-sm font-medium">{step.id + 1}</span>
+                    <span className="text-sm font-medium">{index + 1}</span>
                   )}
                 </span>
                 <span className="ml-3 hidden sm:block">

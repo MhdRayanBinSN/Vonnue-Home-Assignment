@@ -209,11 +209,12 @@ This aligns better with the assignment's emphasis on explainability and practica
 
 While researching, I documented other unique applications where decision companion systems are valuable:
 
-| Application | Use Case | Applicability |
-|-------------|----------|---------------|
-| Laptop/Phone Selection | Compare devices by specs, price, features | High - clear quantifiable criteria |
-| University Selection | Ranking, fees, location, courses, placement | High - multi-criteria with trade-offs |
-| Travel Destination | Budget, weather, activities, distance | Medium - subjective preferences |
+| Domain | Use Case | Pre-built Criteria |
+|--------|----------|-------------------|
+| **Tech Stack Selection** | Choose frameworks, databases, cloud providers | Performance, Cost, Scalability, Learning Curve, Community Support |
+| **Vendor/Tool Evaluation** | Compare SaaS tools, APIs, services | Pricing, Features, Integration, Support, Security |
+| **Feature Prioritization** | Product roadmap decisions | User Impact, Dev Effort, Revenue Potential, Strategic Fit |
+
 
 #### Why I Chose Laptop Recommendation
 
@@ -222,21 +223,101 @@ For the initial phase, I chose:
 **Laptop Recommendation under budget and usage constraints.**
 
 Why:
-- Clear measurable criteria (price, performance, battery, weight)
-- Natural trade-offs
-- Real-world relevance
+- I have a sound knowledge about the parameters infromations
 - Easily testable logic
 - Relatable to most users
 
 This allowed me to:
 - Implement cost vs benefit normalization
-- Demonstrate weighted trade-offs
-- Provide concrete explanations
-- Show dynamic ranking when weights change
+- Provide rule based explanations
+- Show  ranking when weights change
 
-The other applications can be added as future extensions using the same generalized engine.
 
-This marks the end of Week 1 direction setting.
+---
+
+## Week 2 – Domain-Specific Implementation
+
+### 8. Choosing the Development Approach
+
+Before diving into the laptop selection implementation, I researched software development methodologies to find the best fit for this project:
+
+| Approach | Considered | Verdict |
+|----------|------------|---------|
+| Waterfall | Too rigid for exploratory work | Rejected |
+| Agile/Scrum | Overkill for solo project | Rejected |
+| Rapid Prototyping | Good for validation | Considered |
+| RAD (Rapid Application Development) | Fast, component-based | **Selected** |
+
+**Why I chose RAD:**
+- Time constraint (2-week deadline)
+- Solo developer (no team coordination needed)
+- Can leverage existing UI components and libraries
+- Focus on quick, working deliverables
+- Allows iterative refinement
+
+---
+
+### 9. Defining Laptop Selection Parameters
+
+I identified the key criteria for laptop comparison and classified each by type:
+
+| Criterion | Type | Unit/Scale | Default Weight | Description |
+|-----------|------|------------|----------------|-------------|
+| **Price** | Cost | ₹ | 25% | Total cost (lower is better) |
+| **Performance** | Benefit | 1-10 | 25% | CPU/GPU power for intended use |
+| **Battery Life** | Benefit | Hours | 15% | Typical usage duration |
+| **Display Quality** | Benefit | 1-10 | 10% | Resolution, brightness, color accuracy |
+| **Build Quality** | Benefit | 1-10 | 10% | Materials, durability, feel |
+| **Portability** | Benefit | 1-10 | 10% | Weight and size for carrying |
+| **Storage** | Benefit | GB | 5% | SSD capacity |
+
+**Key insight:**
+- Price is a **cost criterion** (lower is better) — requires inverted normalization
+- All other criteria are **benefit criteria** (higher is better)
+
+---
+
+### 10. Approaches for Criteria Handling
+
+I considered three different approaches for how users interact with criteria:
+
+#### Option A: Use-Case Presets
+Pre-configure weight profiles based on user type (Developer, Gamer, Student, etc.)
+- User selects a preset → Weights auto-fill
+- Can still adjust manually if needed
+
+#### Option B: Questionnaire-Based
+Ask simple questions and derive weights automatically:
+- "What's more important - Budget or Performance?"
+- "Do you travel frequently?"
+- System calculates weights from answers
+
+#### Option C: Database-Driven
+Pre-populate laptop data from a database/API:
+- User selects laptops from a list
+- Data is already filled in
+- Just set weights and compare
+
+**My Decision: Use-Case Presets**
+
+| Approach | Why Rejected/Selected |
+|----------|----------------------|
+| Questionnaire-Based | May not capture complete decision context; derived weights could be inaccurate |
+| Database-Driven | Requires accurate, up-to-date laptop specifications; I don't have a reliable data source |
+| **Use-Case Presets** | **Selected** — Provides domain expertise, reduces user effort, still allows customization |
+
+**Planned Presets:**
+```
+Software Development: Performance 30%, Price 20%, Battery 15%, Display 15%, Build 10%, Portability 10%
+Gaming:               Performance 40%, Price 15%, Display 20%, Battery 5%, Build 10%, Portability 10%
+Office/Business:      Price 25%, Battery 25%, Performance 15%, Display 10%, Build 10%, Portability 15%
+Student:              Price 30%, Battery 20%, Performance 15%, Display 10%, Build 10%, Portability 15%
+```
+
+This approach demonstrates:
+- Domain knowledge (understanding what matters for each use case)
+- Good UX design (presets reduce cognitive load)
+- Flexibility (users can still customize)
 
 ---
 

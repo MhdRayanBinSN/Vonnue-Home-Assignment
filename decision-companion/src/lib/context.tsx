@@ -9,6 +9,7 @@ import {
   DecisionMethod,
 } from './types';
 import { generateId, createEmptyProblem } from './decision-engine';
+import { LAPTOP_CRITERIA, USE_CASE_PRESETS, SAMPLE_LAPTOPS, applyPreset } from './laptop-presets';
 
 /**
  * Application State
@@ -17,6 +18,7 @@ interface AppState {
   problem: DecisionProblem;
   result: DecisionResult | null;
   selectedMethod: DecisionMethod;
+  selectedPreset: string | null;
   currentStep: number; // 0: Options, 1: Criteria, 2: Scoring, 3: Results
   isAnalyzing: boolean;
   error: string | null;
@@ -35,8 +37,11 @@ type AppAction =
   | { type: 'ADD_CRITERION'; payload: Criterion }
   | { type: 'UPDATE_CRITERION'; payload: Criterion }
   | { type: 'DELETE_CRITERION'; payload: string }
+  | { type: 'SET_CRITERIA'; payload: Criterion[] }
   | { type: 'UPDATE_SCORE'; payload: { optionId: string; criterionId: string; score: number } }
   | { type: 'SET_METHOD'; payload: DecisionMethod }
+  | { type: 'SET_PRESET'; payload: string }
+  | { type: 'LOAD_SAMPLE_LAPTOPS' }
   | { type: 'SET_STEP'; payload: number }
   | { type: 'SET_RESULT'; payload: DecisionResult }
   | { type: 'SET_ANALYZING'; payload: boolean }
@@ -44,12 +49,28 @@ type AppAction =
   | { type: 'RESET' };
 
 /**
+ * Create initial problem with laptop criteria
+ */
+function createLaptopProblem(): DecisionProblem {
+  return {
+    id: generateId(),
+    title: 'Laptop Comparison',
+    description: 'Choose the best laptop based on your needs',
+    options: [],
+    criteria: [...LAPTOP_CRITERIA],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+}
+
+/**
  * Initial State
  */
 const initialState: AppState = {
-  problem: createEmptyProblem('My Decision'),
+  problem: createLaptopProblem(),
   result: null,
   selectedMethod: 'wsm',
+  selectedPreset: null,
   currentStep: 0,
   isAnalyzing: false,
   error: null,
@@ -166,6 +187,49 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_METHOD':
       return { ...state, selectedMethod: action.payload, result: null };
 
+    case 'SET_PRESET': {
+      const newCriteria = applyPreset(action.payload);
+      return {
+        ...state,
+        selectedPreset: action.payload,
+        problem: {
+          ...state.problem,
+          criteria: newCriteria,
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+    }
+
+    case 'SET_CRITERIA':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          criteria: action.payload,
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'LOAD_SAMPLE_LAPTOPS': {
+      const sampleOptions: Option[] = SAMPLE_LAPTOPS.map(laptop => ({
+        id: generateId(),
+        name: laptop.name,
+        description: laptop.description,
+        scores: { ...laptop.scores },
+      }));
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          options: sampleOptions,
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+    }
+
     case 'SET_STEP':
       return { ...state, currentStep: action.payload };
 
@@ -179,7 +243,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, error: action.payload };
 
     case 'RESET':
-      return { ...initialState, problem: createEmptyProblem('My Decision') };
+      return { ...initialState, problem: createLaptopProblem() };
 
     default:
       return state;
@@ -200,6 +264,8 @@ interface AppContextValue {
   updateCriterion: (criterion: Criterion) => void;
   deleteCriterion: (id: string) => void;
   updateScore: (optionId: string, criterionId: string, score: number) => void;
+  setPreset: (presetId: string) => void;
+  loadSampleLaptops: () => void;
   nextStep: () => void;
   prevStep: () => void;
   goToStep: (step: number) => void;
@@ -253,6 +319,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'UPDATE_SCORE', payload: { optionId, criterionId, score } });
   };
 
+  const setPreset = (presetId: string) => {
+    dispatch({ type: 'SET_PRESET', payload: presetId });
+  };
+
+  const loadSampleLaptops = () => {
+    dispatch({ type: 'LOAD_SAMPLE_LAPTOPS' });
+  };
+
   const nextStep = () => {
     if (state.currentStep < 3) {
       dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
@@ -283,6 +357,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateCriterion,
         deleteCriterion,
         updateScore,
+        setPreset,
+        loadSampleLaptops,
         nextStep,
         prevStep,
         goToStep,

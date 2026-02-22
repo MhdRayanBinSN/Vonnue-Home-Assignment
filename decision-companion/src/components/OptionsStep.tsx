@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Package } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Laptop, ChevronLeft } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { Option } from '@/lib/types';
 
 export function OptionsStep() {
-  const { state, addOption, updateOption, deleteOption, nextStep } = useApp();
+  const { state, addOption, updateOption, deleteOption, nextStep, prevStep, loadSampleLaptops } = useApp();
   const { problem } = state;
 
   const [newOptionName, setNewOptionName] = useState('');
@@ -58,21 +58,37 @@ export function OptionsStep() {
     <div className="animate-fade-in">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 text-primary-600 mb-4">
-          <Package className="w-8 h-8" />
+          <Laptop className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-800">What are your options?</h2>
+        <h2 className="text-2xl font-bold text-slate-800">Add Laptops to Compare</h2>
         <p className="text-slate-600 mt-2">
-          Add at least 2 options you want to compare. These could be products, candidates, destinations, or any choices.
+          Add at least 2 laptops you're considering. Include model names and key specs if helpful.
         </p>
       </div>
 
+      {/* Quick action - load sample laptops */}
+      {problem.options.length === 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-amber-800 font-medium">Quick Start</p>
+            <p className="text-amber-700 text-sm">Load 5 sample laptops to see how the comparison works</p>
+          </div>
+          <button
+            onClick={loadSampleLaptops}
+            className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+          >
+            Load Samples
+          </button>
+        </div>
+      )}
+
       {/* Add new option form */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-        <h3 className="font-semibold text-slate-700 mb-4">Add New Option</h3>
+        <h3 className="font-semibold text-slate-700 mb-4">Add a Laptop</h3>
         <div className="space-y-4">
           <div>
             <label htmlFor="optionName" className="block text-sm font-medium text-slate-700 mb-1">
-              Option Name *
+              Laptop Name *
             </label>
             <input
               id="optionName"
@@ -80,19 +96,19 @@ export function OptionsStep() {
               value={newOptionName}
               onChange={(e) => setNewOptionName(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="e.g., MacBook Pro, Candidate A, Paris..."
+              placeholder="e.g., MacBook Pro 14, Dell XPS 15, ThinkPad X1..."
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
             />
           </div>
           <div>
             <label htmlFor="optionDesc" className="block text-sm font-medium text-slate-700 mb-1">
-              Description (optional)
+              Key Specs (optional)
             </label>
             <textarea
               id="optionDesc"
               value={newOptionDesc}
               onChange={(e) => setNewOptionDesc(e.target.value)}
-              placeholder="Add any details that help describe this option..."
+              placeholder="e.g., M3 Pro, 18GB RAM, 512GB SSD, 14&quot; display..."
               rows={2}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
             />
@@ -103,7 +119,7 @@ export function OptionsStep() {
             className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Option
+            Add Laptop
           </button>
         </div>
       </div>
@@ -112,7 +128,7 @@ export function OptionsStep() {
       {problem.options.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <h3 className="font-semibold text-slate-700 mb-4">
-            Your Options ({problem.options.length})
+            Your Laptops ({problem.options.length})
           </h3>
           <div className="space-y-3">
             {problem.options.map((option, index) => (
@@ -133,7 +149,7 @@ export function OptionsStep() {
                       type="text"
                       value={editDesc}
                       onChange={(e) => setEditDesc(e.target.value)}
-                      placeholder="Description (optional)"
+                      placeholder="Key specs (optional)"
                       className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
@@ -195,11 +211,18 @@ export function OptionsStep() {
         </div>
       )}
 
-      {/* Progress indicator and next button */}
+      {/* Progress indicator and navigation */}
       <div className="flex items-center justify-between">
+        <button
+          onClick={prevStep}
+          className="inline-flex items-center px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          Change Preset
+        </button>
         <p className="text-sm text-slate-500">
           {problem.options.length < 2
-            ? `Add ${2 - problem.options.length} more option${2 - problem.options.length > 1 ? 's' : ''} to continue`
+            ? `Add ${2 - problem.options.length} more laptop${2 - problem.options.length > 1 ? 's' : ''} to continue`
             : '✓ Ready to proceed'}
         </p>
         <button
@@ -207,7 +230,7 @@ export function OptionsStep() {
           disabled={!canProceed}
           className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Continue to Criteria
+          Set Weights
           <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
