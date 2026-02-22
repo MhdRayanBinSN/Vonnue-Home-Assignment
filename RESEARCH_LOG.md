@@ -74,11 +74,16 @@
 ### Feb 22
 
 | Type | Platform | Query/Prompt |
-|------|----------|--------------||
+|------|----------|--------------|
 | AI Prompt | VS Code | What we done in this project - is it generalized or domain specific |
 | AI Prompt | VS Code | What is MCDM algorithms, is there any other algorithm like these |
 | AI Prompt | VS Code | I mean in DSC there is MCDM algorithm, is there any algorithm like MCDM |
 | AI Prompt | VS Code | Is there any algorithm better than MCDM |
+| AI Prompt | VS Code | Should we keep it domain-specific (laptop selection) or generalized? |
+| AI Prompt | VS Code | Implement laptop selection with use-case presets (Software Dev, Gaming, Business, Student, Creative, Custom) |
+| AI Prompt | VS Code | Why do presets still require weight adjustment step? Fix flow to skip weights for presets |
+| AI Prompt | VS Code | Don't use emojis, use premium icons and SVG images (Lucide icons) |
+| AI Prompt | VS Code | Update research log with our used prompts |
 
 ---
 
@@ -103,6 +108,10 @@
 | Not Needed backend/database for these project| Accepted | Not needed for assignment scope |
 | Use Redux for state | Rejected | Overkill, used Context + useReducer instead |
 | Add sensitivity analysis | Accepted | Shows if decision is robust to weight changes |
+| Use domain-specific (Laptop Selection) | Accepted | More practical demo than generic system |
+| Implement use-case presets | Accepted | Better UX, shows understanding of real user needs |
+| Skip weight adjustment for presets | Accepted | Presets already have optimized weights |
+| Replace emojis with Lucide icons | Accepted | Professional, consistent look |
 
 ---
 
