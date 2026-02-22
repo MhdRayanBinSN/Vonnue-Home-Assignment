@@ -1,19 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Laptop, ChevronLeft } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Laptop, ChevronLeft, ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { Option } from '@/lib/types';
 
 export function OptionsStep() {
-  const { state, addOption, updateOption, deleteOption, nextStep, prevStep, loadSampleLaptops } = useApp();
-  const { problem } = state;
+  const { state, addOption, updateOption, deleteOption, nextStep, prevStep, loadSampleLaptops, updateCriterion, goToStep } = useApp();
+  const { problem, selectedPreset } = state;
 
   const [newOptionName, setNewOptionName] = useState('');
   const [newOptionDesc, setNewOptionDesc] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [showWeights, setShowWeights] = useState(false);
 
   const handleAddOption = () => {
     if (newOptionName.trim()) {
@@ -211,6 +212,55 @@ export function OptionsStep() {
         </div>
       )}
 
+      {/* Weights preview/customize (for preset users) */}
+      {selectedPreset && selectedPreset !== 'custom' && problem.options.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-6 overflow-hidden">
+          <button
+            onClick={() => setShowWeights(!showWeights)}
+            className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+          >
+            <div className="flex items-center">
+              <Settings className="w-5 h-5 text-slate-500 mr-3" />
+              <div className="text-left">
+                <span className="font-medium text-slate-700">Current Weights</span>
+                <span className="text-sm text-slate-500 ml-2">
+                  ({selectedPreset.replace('-', ' ')} preset)
+                </span>
+              </div>
+            </div>
+            {showWeights ? (
+              <ChevronUp className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            )}
+          </button>
+          
+          {showWeights && (
+            <div className="px-4 pb-4 border-t border-slate-100">
+              <p className="text-xs text-slate-500 mt-3 mb-4">
+                Fine-tune weights if needed. These are optimized for {selectedPreset.replace('-', ' ')} use.
+              </p>
+              <div className="space-y-3">
+                {problem.criteria.map((criterion) => (
+                  <div key={criterion.id} className="flex items-center space-x-3">
+                    <span className="text-sm text-slate-600 w-28 truncate">{criterion.name}</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={criterion.weight}
+                      onChange={(e) => updateCriterion({ ...criterion, weight: Number(e.target.value) })}
+                      className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+                    />
+                    <span className="text-sm font-medium text-slate-700 w-10">{criterion.weight}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Progress indicator and navigation */}
       <div className="flex items-center justify-between">
         <button
@@ -230,7 +280,7 @@ export function OptionsStep() {
           disabled={!canProceed}
           className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Set Weights
+          {state.selectedPreset && state.selectedPreset !== 'custom' ? 'Score Laptops' : 'Adjust Weights'}
           <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>

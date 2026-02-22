@@ -328,19 +328,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const nextStep = () => {
-    if (state.currentStep < 3) {
-      dispatch({ type: 'SET_STEP', payload: state.currentStep + 1 });
+    if (state.currentStep < 4) {
+      let next = state.currentStep + 1;
+      // Skip Weights step (2) if preset is not 'custom'
+      if (next === 2 && state.selectedPreset && state.selectedPreset !== 'custom') {
+        next = 3;
+      }
+      dispatch({ type: 'SET_STEP', payload: next });
     }
   };
 
   const prevStep = () => {
     if (state.currentStep > 0) {
-      dispatch({ type: 'SET_STEP', payload: state.currentStep - 1 });
+      let prev = state.currentStep - 1;
+      // Skip Weights step (2) if preset is not 'custom'
+      if (prev === 2 && state.selectedPreset && state.selectedPreset !== 'custom') {
+        prev = 1;
+      }
+      dispatch({ type: 'SET_STEP', payload: prev });
     }
   };
 
   const goToStep = (step: number) => {
-    if (step >= 0 && step <= 3) {
+    if (step >= 0 && step <= 4) {
+      // Block going to Weights step (2) if preset is not 'custom'
+      if (step === 2 && state.selectedPreset && state.selectedPreset !== 'custom') {
+        return;
+      }
       dispatch({ type: 'SET_STEP', payload: step });
     }
   };
