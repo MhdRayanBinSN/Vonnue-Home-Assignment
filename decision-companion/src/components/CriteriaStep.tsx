@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Scale, TrendingUp, TrendingDown, Info, RefreshCw } from 'lucide-react';
+import { Scale, TrendingUp, TrendingDown, Info, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 
 export function CriteriaStep() {
@@ -218,8 +218,8 @@ export function CriteriaStep() {
           </svg>
           Back
         </button>
-        <p className="text-sm text-slate-500">
-          ✓ Weights configured
+        <p className="text-sm text-slate-500 flex items-center">
+          <CheckCircle2 className="w-4 h-4 text-green-500 mr-1" /> Weights configured
         </p>
         <button
           onClick={nextStep}

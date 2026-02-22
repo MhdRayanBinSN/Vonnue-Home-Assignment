@@ -105,7 +105,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'software-dev',
     name: 'Software Development',
     description: 'Coding, compilation, running IDEs and containers',
-    icon: '💻',
+    icon: 'Code2',
     weights: {
       price: 20,
       performance: 30,
@@ -120,7 +120,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'gaming',
     name: 'Gaming',
     description: 'High-performance games and graphics-intensive tasks',
-    icon: '🎮',
+    icon: 'Gamepad2',
     weights: {
       price: 15,
       performance: 40,
@@ -135,7 +135,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'business',
     name: 'Office / Business',
     description: 'Productivity, meetings, documents, presentations',
-    icon: '💼',
+    icon: 'Briefcase',
     weights: {
       price: 25,
       performance: 15,
@@ -150,7 +150,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'student',
     name: 'Student',
     description: 'Notes, research, assignments, budget-friendly',
-    icon: '📚',
+    icon: 'GraduationCap',
     weights: {
       price: 30,
       performance: 15,
@@ -165,7 +165,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'creative',
     name: 'Creative / Design',
     description: 'Video editing, graphic design, 3D rendering',
-    icon: '🎨',
+    icon: 'Palette',
     weights: {
       price: 15,
       performance: 25,
@@ -180,7 +180,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     id: 'custom',
     name: 'Custom',
     description: 'Set your own weights based on your priorities',
-    icon: '⚙️',
+    icon: 'Settings',
     weights: {
       price: 15,
       performance: 15,

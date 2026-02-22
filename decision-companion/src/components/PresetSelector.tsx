@@ -1,9 +1,29 @@
 'use client';
 
 import React from 'react';
-import { Laptop, Target } from 'lucide-react';
+import { 
+  Laptop, 
+  Target, 
+  Code2, 
+  Gamepad2, 
+  Briefcase, 
+  GraduationCap, 
+  Palette, 
+  Settings,
+  CheckCircle2
+} from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { USE_CASE_PRESETS } from '@/lib/laptop-presets';
+
+// Map icon names to components
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Code2,
+  Gamepad2,
+  Briefcase,
+  GraduationCap,
+  Palette,
+  Settings,
+};
 
 export function PresetSelector() {
   const { state, setPreset, loadSampleLaptops, nextStep } = useApp();
@@ -54,7 +74,14 @@ export function PresetSelector() {
               `}
             >
               <div className="flex items-start space-x-3">
-                <span className="text-2xl">{preset.icon}</span>
+                {(() => {
+                  const IconComponent = iconMap[preset.icon];
+                  return IconComponent ? (
+                    <div className={`p-2 rounded-lg ${selectedPreset === preset.id ? 'bg-primary-200' : 'bg-slate-100'}`}>
+                      <IconComponent className={`w-6 h-6 ${selectedPreset === preset.id ? 'text-primary-700' : 'text-slate-600'}`} />
+                    </div>
+                  ) : null;
+                })()}
                 <div>
                   <h4 className={`font-semibold ${selectedPreset === preset.id ? 'text-primary-700' : 'text-slate-700'}`}>
                     {preset.name}
@@ -63,7 +90,8 @@ export function PresetSelector() {
                 </div>
               </div>
               {selectedPreset === preset.id && (
-                <div className="mt-3 pt-3 border-t border-primary-200">
+                <div className="mt-3 pt-3 border-t border-primary-200 flex items-center">
+                  <CheckCircle2 className="w-4 h-4 text-primary-600 mr-2" />
                   <p className="text-xs text-primary-600 font-medium">Optimized weights applied</p>
                 </div>
               )}

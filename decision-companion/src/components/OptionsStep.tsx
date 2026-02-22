@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit2, Save, X, Laptop, ChevronLeft, ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Laptop, ChevronLeft, ChevronDown, ChevronUp, Settings, CheckCircle2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { Option } from '@/lib/types';
 
@@ -270,10 +270,10 @@ export function OptionsStep() {
           <ChevronLeft className="w-5 h-5 mr-1" />
           Change Preset
         </button>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 flex items-center">
           {problem.options.length < 2
             ? `Add ${2 - problem.options.length} more laptop${2 - problem.options.length > 1 ? 's' : ''} to continue`
-            : '✓ Ready to proceed'}
+            : <><CheckCircle2 className="w-4 h-4 text-green-500 mr-1" /> Ready to proceed</>}
         </p>
         <button
           onClick={nextStep}
