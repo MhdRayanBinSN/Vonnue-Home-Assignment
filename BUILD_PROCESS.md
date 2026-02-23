@@ -235,7 +235,8 @@ This allowed me to:
 
 ---
 
-## Week 2 – Domain-Specific Implementation
+## Feb 22 – Domain-Specific Implementation
+
 
 ### 8. Choosing the Development Approach
 
@@ -249,9 +250,9 @@ Before diving into the laptop selection implementation, I researched software de
 | RAD (Rapid Application Development) | Fast, component-based | **Selected** |
 
 **Why I chose RAD:**
+- We can do updates in based on ideas and deploy version basis
 - Time constraint (2-week deadline)
 - Solo developer (no team coordination needed)
-- Can leverage existing UI components and libraries
 - Focus on quick, working deliverables
 - Allows iterative refinement
 
@@ -277,7 +278,7 @@ I identified the key criteria for laptop comparison and classified each by type:
 
 ---
 
-### 10. Approaches for Criteria Handling
+### 10. Approaches for Criteria Handling 
 
 I considered three different approaches for how users interact with criteria:
 
@@ -318,6 +319,19 @@ This approach demonstrates:
 - Domain knowledge (understanding what matters for each use case)
 - Good UX design (presets reduce cognitive load)
 - Flexibility (users can still customize)
+
+---
+
+### 11. Issues Found During Testing (Feb 22)
+
+While testing the prototype, I identified and fixed these issues:
+
+| Issue | What Happened | How I Fixed It |
+|-------|---------------|----------------|
+| Tailwind v4 classes | Old class names like `bg-gradient-*` not working | Changed to new syntax `bg-linear-*` |
+| JSX errors | Some component rendering issues | Fixed syntax and imports |
+| Preset still asks for weights | Even after selecting preset, weight step was shown | Modified `context.tsx` to skip Step 2 for presets |
+| Emojis look inconsistent | Different browsers render emojis differently | Replaced with Lucide React icons |
 
 ---
 

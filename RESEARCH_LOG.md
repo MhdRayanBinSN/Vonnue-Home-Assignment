@@ -79,11 +79,13 @@
 | AI Prompt | VS Code | What is MCDM algorithms, is there any other algorithm like these |
 | AI Prompt | VS Code | I mean in DSC there is MCDM algorithm, is there any algorithm like MCDM |
 | AI Prompt | VS Code | Is there any algorithm better than MCDM |
-| AI Prompt | VS Code | Should we keep it domain-specific (laptop selection) or generalized? |
-| AI Prompt | VS Code | Implement laptop selection with use-case presets (Software Dev, Gaming, Business, Student, Creative, Custom) |
+| AI Prompt | VS Code | give the calcuation example of wsm |
+| AI Prompt | VS Code | give the comparison and benfits of wsm with AHP |
+| AI Prompt | VS Code | Should we keep it domain-specific  or generalized? |
+| AI Prompt | VS Code | Implement laptop selection with use-case presets Software Dev, Gaming, Business, Student, Creative, Custom |
 | AI Prompt | VS Code | Why do presets still require weight adjustment step? Fix flow to skip weights for presets |
 | AI Prompt | VS Code | Don't use emojis, use premium icons and SVG images (Lucide icons) |
-| AI Prompt | VS Code | Update research log with our used prompts |
+
 
 ---
 
