@@ -3,7 +3,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const SYSTEM_PROMPT = `You are a laptop spec lookup assistant. Given a laptop model name, return its approximate specifications in JSON format.
 
-Return ONLY a valid JSON object with these exact keys:
+VALIDATION RULES (CHECK FIRST):
+1. If the input is NOT a real laptop model name, return: {"error": "not_a_laptop", "message": "This doesn't look like a laptop model. Try something like 'Dell XPS 15' or 'MacBook Air M3'."}
+2. If the input is too vague (e.g., just "Dell" or "laptop"), return: {"error": "too_vague", "message": "Please be more specific. Include the model name and year, e.g., 'Dell XPS 15 2024' or 'ASUS ROG Strix G16 2024'."}
+3. If you cannot confidently identify the laptop model, return: {"error": "unknown_model", "message": "Could not find specs for this laptop. Check the model name and try again."}
+
+ONLY if the input is a valid, recognized laptop model, return a JSON object with these exact keys:
 {
   "price": <number, price in Indian Rupees (₹), approximate MRP>,
   "cpu": <number, CPU tier: 3=i3/R3, 5=i5/R5, 7=i7/R7, 9=i9/R9, 7=M3, 9=M3Pro, 10=M3Max>,
@@ -21,10 +26,10 @@ Return ONLY a valid JSON object with these exact keys:
 
 IMPORTANT: 
 - Return ONLY the JSON object, no markdown, no explanation
+- ALWAYS validate input first — reject gibberish, random words, non-laptop products
 - Use the closest matching value from the allowed options for each field
 - If the laptop has multiple configurations, use the most common/popular one
-- Price should be the approximate Indian MRP in 2024-2025
-- If you're not sure about a spec, use a reasonable estimate`;
+- Price should be the approximate Indian MRP in 2024-2025`;
 
 export async function POST(request: NextRequest) {
     try {
@@ -33,6 +38,14 @@ export async function POST(request: NextRequest) {
         if (!laptopName || typeof laptopName !== 'string') {
             return NextResponse.json(
                 { error: 'Laptop name is required' },
+                { status: 400 }
+            );
+        }
+
+        // Basic client-side validation
+        if (laptopName.trim().length < 3) {
+            return NextResponse.json(
+                { error: 'Please enter a valid laptop model name (e.g., "Dell XPS 15" or "MacBook Air M3").' },
                 { status: 400 }
             );
         }
@@ -46,39 +59,66 @@ export async function POST(request: NextRequest) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const result = await model.generateContent([
-            { text: SYSTEM_PROMPT },
-            { text: `Look up specs for: "${laptopName}"` },
-        ]);
+        // Retry logic for rate limits
+        let lastError: Error | null = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                if (attempt > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+                }
 
-        const responseText = result.response.text().trim();
+                const result = await model.generateContent([
+                    { text: SYSTEM_PROMPT },
+                    { text: `Look up specs for: "${laptopName}"` },
+                ]);
 
-        // Parse the JSON response (handle markdown code blocks if present)
-        let jsonStr = responseText;
-        if (jsonStr.startsWith('```')) {
-            jsonStr = jsonStr.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-        }
+                const responseText = result.response.text().trim();
 
-        const specs = JSON.parse(jsonStr);
+                // Parse the JSON response (handle markdown code blocks if present)
+                let jsonStr = responseText;
+                if (jsonStr.startsWith('```')) {
+                    jsonStr = jsonStr.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+                }
 
-        // Validate all required keys exist
-        const requiredKeys = [
-            'price', 'cpu', 'gpu', 'ram', 'ssd', 'hdd',
-            'displaySize', 'refreshRate', 'resolution', 'battery', 'weight', 'build'
-        ];
+                const parsed = JSON.parse(jsonStr);
 
-        for (const key of requiredKeys) {
-            if (specs[key] === undefined) {
-                return NextResponse.json(
-                    { error: `AI response missing "${key}" field. Try again.` },
-                    { status: 500 }
-                );
+                // Check if AI returned a validation error
+                if (parsed.error) {
+                    return NextResponse.json(
+                        { error: parsed.message || 'Could not identify this laptop. Please enter a specific model name.' },
+                        { status: 400 }
+                    );
+                }
+
+                // Validate all required keys exist
+                const requiredKeys = [
+                    'price', 'cpu', 'gpu', 'ram', 'ssd', 'hdd',
+                    'displaySize', 'refreshRate', 'resolution', 'battery', 'weight', 'build'
+                ];
+
+                for (const key of requiredKeys) {
+                    if (parsed[key] === undefined) {
+                        return NextResponse.json(
+                            { error: `AI response missing "${key}" field. Try again.` },
+                            { status: 500 }
+                        );
+                    }
+                }
+
+                return NextResponse.json({ specs: parsed, source: 'gemini' });
+            } catch (err) {
+                lastError = err instanceof Error ? err : new Error(String(err));
+                // Only retry on rate limit errors
+                if (!lastError.message.includes('429') && !lastError.message.includes('Too Many')) {
+                    break;
+                }
+                console.log(`Rate limited, retrying in ${2 * (attempt + 1)}s... (attempt ${attempt + 1}/3)`);
             }
         }
 
-        return NextResponse.json({ specs, source: 'gemini' });
+        throw lastError || new Error('All retries failed');
     } catch (error) {
         console.error('Lookup error:', error);
 

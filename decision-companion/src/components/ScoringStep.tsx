@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { ClipboardList, Info, TrendingUp, TrendingDown, CheckCircle2, Sparkles, Loader2 } from 'lucide-react';
+import { ClipboardList, TrendingUp, TrendingDown, CheckCircle2, Sparkles, Loader2, Link2 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import { CRITERION_INPUTS } from '@/lib/laptop-presets';
 
@@ -14,6 +14,11 @@ export function ScoringStep() {
   const [aiLoading, setAiLoading] = useState<Record<string, boolean>>({});
   const [aiErrors, setAiErrors] = useState<Record<string, string>>({});
   const [aiSuccess, setAiSuccess] = useState<Record<string, boolean>>({});
+
+  // URL fallback state
+  const [urlInputs, setUrlInputs] = useState<Record<string, string>>({});
+  const [showUrlInput, setShowUrlInput] = useState<Record<string, boolean>>({});
+  const [urlLoading, setUrlLoading] = useState<Record<string, boolean>>({});
 
   // Calculate completion percentage
   const { completedScores, totalScores, completionPercentage } = useMemo(() => {
@@ -81,12 +86,54 @@ export function ScoringStep() {
       setAiSuccess(prev => ({ ...prev, [optionId]: true }));
       setTimeout(() => setAiSuccess(prev => ({ ...prev, [optionId]: false })), 3000);
     } catch (error) {
-      setAiErrors(prev => ({
-        ...prev,
-        [optionId]: error instanceof Error ? error.message : 'Auto-fill failed',
-      }));
+      const msg = error instanceof Error ? error.message : 'Auto-fill failed';
+      setAiErrors(prev => ({ ...prev, [optionId]: msg }));
+      // Show URL fallback on error
+      setShowUrlInput(prev => ({ ...prev, [optionId]: true }));
     } finally {
       setAiLoading(prev => ({ ...prev, [optionId]: false }));
+    }
+  };
+
+  // URL-based auto-fill handler
+  const handleUrlAutoFill = async (optionId: string) => {
+    const url = urlInputs[optionId]?.trim();
+    if (!url) return;
+
+    setUrlLoading(prev => ({ ...prev, [optionId]: true }));
+    setAiErrors(prev => ({ ...prev, [optionId]: '' }));
+    setAiSuccess(prev => ({ ...prev, [optionId]: false }));
+
+    try {
+      const response = await fetch('/api/lookup-from-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to extract specs from URL');
+      }
+
+      const specs = data.specs;
+      for (const criterion of problem.criteria) {
+        if (specs[criterion.id] !== undefined) {
+          updateScore(optionId, criterion.id, specs[criterion.id]);
+        }
+      }
+
+      setAiSuccess(prev => ({ ...prev, [optionId]: true }));
+      setShowUrlInput(prev => ({ ...prev, [optionId]: false }));
+      setTimeout(() => setAiSuccess(prev => ({ ...prev, [optionId]: false })), 3000);
+    } catch (error) {
+      setAiErrors(prev => ({
+        ...prev,
+        [optionId]: error instanceof Error ? error.message : 'URL extraction failed',
+      }));
+    } finally {
+      setUrlLoading(prev => ({ ...prev, [optionId]: false }));
     }
   };
 
@@ -295,6 +342,52 @@ export function ScoringStep() {
                 {errorMsg && (
                   <div className="mt-2 text-sm text-red-600 bg-red-50 px-3 py-1.5 rounded-md">
                     ⚠️ {errorMsg}
+                  </div>
+                )}
+
+                {/* URL fallback input */}
+                {showUrlInput[option.id] && (
+                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-700 font-medium mb-2">
+                      📎 Can&apos;t find it? Paste the product URL from Amazon, Flipkart, or the manufacturer&apos;s website:
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400" />
+                        <input
+                          type="url"
+                          value={urlInputs[option.id] || ''}
+                          onChange={(e) => setUrlInputs(prev => ({ ...prev, [option.id]: e.target.value }))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleUrlAutoFill(option.id)}
+                          placeholder="https://www.amazon.in/dp/... or https://www.flipkart.com/..."
+                          disabled={urlLoading[option.id]}
+                          className="w-full pl-9 pr-4 py-2 text-sm border border-blue-200 rounded-lg bg-white
+                            focus:ring-2 focus:ring-blue-400 focus:border-blue-400
+                            placeholder:text-blue-300 transition-all disabled:opacity-60"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleUrlAutoFill(option.id)}
+                        disabled={urlLoading[option.id] || !urlInputs[option.id]?.trim()}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+                          bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-lg
+                          hover:from-blue-600 hover:to-cyan-700
+                          disabled:opacity-50 disabled:cursor-not-allowed
+                          transition-all shadow-sm hover:shadow-md"
+                      >
+                        {urlLoading[option.id] ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Extracting...
+                          </>
+                        ) : (
+                          <>
+                            <Link2 className="w-4 h-4" />
+                            Extract Specs
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
