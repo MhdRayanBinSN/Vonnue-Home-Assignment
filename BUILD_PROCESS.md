@@ -333,5 +333,89 @@ While testing the prototype, I identified and fixed these issues:
 | Preset still asks for weights | Even after selecting preset, weight step was shown | Modified `context.tsx` to skip Step 2 for presets |
 | Emojis look inconsistent | Different browsers render emojis differently | Replaced with Lucide React icons |
 
+
 ---
 
+## Feb 23 & 24 - Iteration 2: AI-Powered Auto-Fill & Deployment
+
+### 12. Thinking Process - Removing Data Entry Friction
+
+After the core laptop scoring system was working, I reflected on the biggest usability bottleneck:
+
+> Users are expected to manually fill 12 technical specifications per laptop - price, CPU tier, GPU tier, RAM, SSD, display size, refresh rate, resolution, battery, weight, and build quality.
+
+For a non-technical user, this is overwhelming. The system was technically correct but difficult to use in practice.
+
+**My thinking:**
+- The WSM algorithm needs numeric inputs - this is non-negotiable.
+- But the *entry* of those numbers does not have to be manual.
+- LLMs already know laptop specs from training data - why not use that?
+
+This led me to design an AI auto-fill feature using the Gemini API.
+
+---
+
+### 13. Designing the AI Integration
+
+**My approach:**
+- Keep the algorithm pure (no AI in the scoring logic)
+- Use AI only as a *data entry assistant*
+- Output must be structured JSON matching the scoring system's exact schema
+
+**Key design decision:**
+> AI fills the raw scores. The WSM algorithm still computes the ranking. This keeps the decision logic deterministic and explainable - AI is just a convenience layer, not the decision-maker.
+
+---
+
+### 14. Alternative Approaches I Considered
+
+| Approach | Considered | Verdict |
+|----------|------------|---------|
+| Let AI rank the laptops directly | Yes | Rejected - violates explainability requirement |
+| Pre-populate a database of laptop specs | Yes | Rejected - requires maintenance, gets outdated |
+| Web scrape specs automatically on page load | Yes | Rejected - too slow, unreliable for all models |
+| AI auto-fill on user request with a button | Yes | **Selected** - user stays in control, on-demand |
+
+---
+
+### 15. Edge Case Discovery - Invalid Input Handling
+
+During testing, I identified a critical flaw:
+
+> If a user types gibberish or a wrong name, the LLM will **hallucinate specs** - confidently returning fake data.
+
+This is dangerous for a decision system - the ranking would be based on fabricated numbers.
+
+**Fix applied:** Added validation rules to the Gemini system prompt so it returns a structured JSON error for non-laptop inputs instead of guessing.
+
+**Second edge case discovered:**
+> What if the laptop model is real but obscure, or too new for the AI to know?
+
+**Fix applied:** When the model name lookup fails, a URL input appears - the user can paste a product link from Amazon or Flipkart, and the AI extracts specs directly from the page content.
+
+---
+
+### 16. Deployment Issues & Fixes
+
+This was the first time deploying a Next.js App Router project with API routes to Netlify.
+
+| Issue | Root Cause | Fix |
+|-------|------------|-----|
+| Page not found on Netlify | No `netlify.toml` configured | Added `netlify.toml` with base dir and `@netlify/plugin-nextjs` |
+| Build failed on Netlify | Missing `@types/node` in dependencies | Installed `@types/node` as dev dependency |
+| API key not working in production | `.env.local` is local-only, not deployed | Added `GEMINI_API_KEY` to Netlify environment variables |
+| gemini-2.0-flash 404 error | Model deprecated for new API keys | Switched to `gemini-2.5-flash` |
+
+**Key learning:**
+> Local `.env.local` files are never pushed to Git or deployed. Every deployment platform needs environment variables set separately in their dashboard.
+
+---
+
+### 17. What Changed During Development and Why
+
+| Decision | Original Plan | What Actually Happened | Reason |
+|----------|---------------|----------------------|--------|
+| Gemini model | `gemini-2.0-flash` | `gemini-2.5-flash` | 2.0-flash deprecated for new API keys |
+| Error display | Show raw API error | Show clean user-friendly message | Raw errors expose internal details, bad UX |
+| URL fallback | Not planned | Added after testing | Needed to handle unknown/obscure laptop models |
+| Input validation | Not planned | Added to system prompt | Prevent AI hallucinations for invalid inputs |
