@@ -29,7 +29,7 @@ const methodDescriptions = {
   },
 };
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899'];
 
 export function ResultsStep() {
   const { state, dispatch, prevStep } = useApp();
@@ -163,7 +163,7 @@ export function ResultsStep() {
                   px-3 py-1 rounded-full text-sm font-medium
                   ${result.recommendation.confidence === 'high' ? 'bg-green-500/30 text-green-100' :
                     result.recommendation.confidence === 'medium' ? 'bg-yellow-500/30 text-yellow-100' :
-                    'bg-red-500/30 text-red-100'}
+                      'bg-red-500/30 text-red-100'}
                 `}>
                   {result.recommendation.confidence.charAt(0).toUpperCase() + result.recommendation.confidence.slice(1)} Confidence
                 </span>
@@ -259,9 +259,9 @@ export function ResultsStep() {
                 <div className="flex items-center">
                   <div className={`
                     w-10 h-10 rounded-full flex items-center justify-center mr-4
-                    ${index === 0 ? 'bg-primary-600 text-white' : 
-                      index === 1 ? 'bg-slate-400 text-white' : 
-                      index === 2 ? 'bg-amber-600 text-white' : 'bg-slate-300 text-slate-700'}
+                    ${index === 0 ? 'bg-primary-600 text-white' :
+                      index === 1 ? 'bg-slate-400 text-white' :
+                        index === 2 ? 'bg-amber-600 text-white' : 'bg-slate-300 text-slate-700'}
                   `}>
                     {index === 0 ? <Trophy className="w-5 h-5" /> : `#${r.rank}`}
                   </div>
@@ -399,9 +399,8 @@ export function ResultsStep() {
         >
           <div className="flex items-center">
             <h3 className="font-semibold text-slate-700">Sensitivity Analysis</h3>
-            <span className={`ml-3 px-2 py-0.5 rounded text-xs font-medium ${
-              result.sensitivity.isRobust ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-            }`}>
+            <span className={`ml-3 px-2 py-0.5 rounded text-xs font-medium ${result.sensitivity.isRobust ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+              }`}>
               {result.sensitivity.isRobust ? 'Robust Decision' : 'May Change with Different Weights'}
             </span>
           </div>

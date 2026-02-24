@@ -19,6 +19,7 @@
   "license": "MIT",
   "description": "A decision companion system that helps users make better decisions using multi-criteria decision analysis",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

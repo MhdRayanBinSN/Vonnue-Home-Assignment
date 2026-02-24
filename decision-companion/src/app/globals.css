@@ -11,16 +11,41 @@
   --color-primary-700: #1d4ed8;
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
-  
+
   --color-success-50: #f0fdf4;
   --color-success-100: #dcfce7;
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
-  
+
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
+
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 :root {
@@ -31,12 +56,9 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
   min-height: 100vh;
 }
 
@@ -82,8 +104,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  ring: 2px;
-  ring-color: #3b82f6;
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 /* Progress bar animation */

@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { 
-  Laptop, 
-  Target, 
-  Code2, 
-  Gamepad2, 
-  Briefcase, 
-  GraduationCap, 
-  Palette, 
+import {
+  Laptop,
+  Target,
+  Code2,
+  Gamepad2,
+  Briefcase,
+  GraduationCap,
+  Palette,
   Settings,
   CheckCircle2
 } from 'lucide-react';
@@ -104,7 +104,7 @@ export function PresetSelector() {
       {selectedPreset && (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
           <h3 className="font-semibold text-slate-700 mb-4">Criteria Weights Preview</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {problem.criteria.map((criterion) => (
               <div key={criterion.id} className="bg-slate-50 rounded-lg p-3">
                 <div className="text-sm text-slate-600">{criterion.name}</div>

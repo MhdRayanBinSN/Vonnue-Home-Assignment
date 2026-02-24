@@ -37,7 +37,7 @@ export function CriteriaStep() {
   };
 
   const canProceed = problem.criteria.length >= 1;
-  const colors = ['bg-primary-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-cyan-500', 'bg-orange-500'];
+  const colors = ['bg-primary-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-cyan-500', 'bg-orange-500', 'bg-teal-500', 'bg-pink-500', 'bg-indigo-500', 'bg-lime-500', 'bg-sky-500'];
 
   return (
     <div className="animate-fade-in">
@@ -88,9 +88,8 @@ export function CriteriaStep() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    criterion.type === 'benefit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                  }`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${criterion.type === 'benefit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    }`}>
                     {criterion.type === 'benefit' ? (
                       <TrendingUp className="w-3 h-3 mr-1" />
                     ) : (

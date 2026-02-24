@@ -1,164 +1,325 @@
 /**
- * Laptop Selection - Domain-Specific Presets
+ * Laptop Selection - Domain-Specific Presets (Enhanced)
  * 
- * Pre-defined criteria and use-case weight profiles for laptop comparison.
- * This provides domain expertise while allowing user customization.
+ * Provides structured input definitions, GPU/CPU tiers with auto-scoring,
+ * real laptop specs, and use-case weight profiles.
  */
 
 import { Criterion } from './types';
 
+// ─── Structured Input Definitions ────────────────────────────────────────────
+
 /**
- * Use-case preset definitions
- * Each preset has optimized weights for specific user needs
+ * Defines how each criterion is input by the user.
+ * - 'number': plain numeric input (price, battery, weight)
+ * - 'select': dropdown with predefined options that auto-map to scores
  */
-export interface UseCasePreset {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  weights: {
-    price: number;
-    performance: number;
-    battery: number;
-    display: number;
-    build: number;
-    portability: number;
-    storage: number;
-  };
+export interface CriterionInputConfig {
+  type: 'number' | 'select';
+  options?: { label: string; value: number }[];
+  unit?: string;
+  placeholder?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 /**
- * Pre-defined laptop criteria
- * These are fixed for the laptop selection domain
+ * Input configurations for each criterion.
+ * These define what the user sees in the scoring step.
+ */
+export const CRITERION_INPUTS: Record<string, CriterionInputConfig> = {
+  price: {
+    type: 'number',
+    unit: '₹',
+    placeholder: 'e.g. 75000',
+    min: 20000,
+    max: 500000,
+    step: 1000,
+  },
+  cpu: {
+    type: 'select',
+    options: [
+      { label: 'Intel i3 / Ryzen 3', value: 3 },
+      { label: 'Intel i5 / Ryzen 5', value: 5 },
+      { label: 'Intel i7 / Ryzen 7', value: 7 },
+      { label: 'Intel i9 / Ryzen 9', value: 9 },
+      { label: 'Apple M3', value: 7 },
+      { label: 'Apple M3 Pro', value: 9 },
+      { label: 'Apple M3 Max', value: 10 },
+    ],
+  },
+  gpu: {
+    type: 'select',
+    options: [
+      { label: 'Integrated (Intel UHD / Iris)', value: 1 },
+      { label: 'Integrated (AMD Radeon)', value: 2 },
+      { label: 'NVIDIA MX550 / MX570', value: 3 },
+      { label: 'NVIDIA RTX 3050', value: 5 },
+      { label: 'NVIDIA RTX 4050', value: 6 },
+      { label: 'NVIDIA RTX 4060', value: 7 },
+      { label: 'NVIDIA RTX 4070', value: 8 },
+      { label: 'NVIDIA RTX 4080 / 4090', value: 10 },
+      { label: 'Apple M3 (Integrated)', value: 4 },
+      { label: 'Apple M3 Pro GPU', value: 7 },
+      { label: 'Apple M3 Max GPU', value: 9 },
+    ],
+  },
+  ram: {
+    type: 'select',
+    options: [
+      { label: '4 GB', value: 4 },
+      { label: '8 GB', value: 8 },
+      { label: '16 GB', value: 16 },
+      { label: '18 GB', value: 18 },
+      { label: '24 GB', value: 24 },
+      { label: '32 GB', value: 32 },
+      { label: '64 GB', value: 64 },
+    ],
+  },
+  ssd: {
+    type: 'select',
+    options: [
+      { label: 'No SSD', value: 0 },
+      { label: '128 GB SSD', value: 128 },
+      { label: '256 GB SSD', value: 256 },
+      { label: '512 GB SSD', value: 512 },
+      { label: '1 TB SSD', value: 1000 },
+      { label: '2 TB SSD', value: 2000 },
+    ],
+  },
+  hdd: {
+    type: 'select',
+    options: [
+      { label: 'No HDD', value: 0 },
+      { label: '500 GB HDD', value: 500 },
+      { label: '1 TB HDD', value: 1000 },
+      { label: '2 TB HDD', value: 2000 },
+    ],
+  },
+  displaySize: {
+    type: 'select',
+    options: [
+      { label: '13.3"', value: 13.3 },
+      { label: '14"', value: 14 },
+      { label: '15.6"', value: 15.6 },
+      { label: '16"', value: 16 },
+      { label: '17.3"', value: 17.3 },
+    ],
+  },
+  refreshRate: {
+    type: 'select',
+    options: [
+      { label: '60 Hz', value: 60 },
+      { label: '90 Hz', value: 90 },
+      { label: '120 Hz', value: 120 },
+      { label: '144 Hz', value: 144 },
+      { label: '165 Hz', value: 165 },
+      { label: '240 Hz', value: 240 },
+    ],
+  },
+  resolution: {
+    type: 'select',
+    options: [
+      { label: 'HD (1366×768)', value: 2 },
+      { label: 'Full HD (1920×1080)', value: 5 },
+      { label: '2K / QHD (2560×1440)', value: 7 },
+      { label: 'Retina / 3K', value: 8 },
+      { label: '4K UHD (3840×2160)', value: 9 },
+    ],
+  },
+  battery: {
+    type: 'number',
+    unit: 'hrs',
+    placeholder: 'e.g. 10',
+    min: 1,
+    max: 24,
+    step: 0.5,
+  },
+  weight: {
+    type: 'number',
+    unit: 'kg',
+    placeholder: 'e.g. 1.8',
+    min: 0.5,
+    max: 5,
+    step: 0.1,
+  },
+  build: {
+    type: 'select',
+    options: [
+      { label: 'All Plastic', value: 3 },
+      { label: 'Metal + Plastic', value: 5 },
+      { label: 'Full Aluminum', value: 7 },
+      { label: 'Premium (CNC Aluminum / Magnesium)', value: 9 },
+    ],
+  },
+};
+
+// ─── Criteria Definitions ────────────────────────────────────────────────────
+
+/**
+ * 12 laptop-specific criteria with descriptions and input types
  */
 export const LAPTOP_CRITERIA: Criterion[] = [
   {
     id: 'price',
     name: 'Price',
-    weight: 25,
+    weight: 20,
     type: 'cost',
     description: 'Total cost in ₹ (lower is better)',
-    minValue: 30000,
-    maxValue: 300000,
+    minValue: 20000,
+    maxValue: 500000,
   },
   {
-    id: 'performance',
-    name: 'Performance',
-    weight: 25,
+    id: 'cpu',
+    name: 'CPU',
+    weight: 12,
     type: 'benefit',
-    description: 'CPU/GPU power for your intended use (1-10 scale)',
+    description: 'Processor tier — affects compilation, multitasking',
+    minValue: 1,
+    maxValue: 10,
+  },
+  {
+    id: 'gpu',
+    name: 'GPU',
+    weight: 12,
+    type: 'benefit',
+    description: 'Graphics — integrated vs dedicated, critical for gaming/3D',
+    minValue: 1,
+    maxValue: 10,
+  },
+  {
+    id: 'ram',
+    name: 'RAM',
+    weight: 10,
+    type: 'benefit',
+    description: 'Memory in GB — affects multitasking and heavy workloads',
+    minValue: 4,
+    maxValue: 64,
+  },
+  {
+    id: 'ssd',
+    name: 'SSD Storage',
+    weight: 8,
+    type: 'benefit',
+    description: 'Solid State Drive capacity — fast boot & load times',
+    minValue: 0,
+    maxValue: 2000,
+  },
+  {
+    id: 'hdd',
+    name: 'HDD Storage',
+    weight: 3,
+    type: 'benefit',
+    description: 'Hard Disk Drive — bulk storage for files, cheaper per GB',
+    minValue: 0,
+    maxValue: 2000,
+  },
+  {
+    id: 'displaySize',
+    name: 'Display Size',
+    weight: 5,
+    type: 'benefit',
+    description: 'Screen diagonal in inches',
+    minValue: 13,
+    maxValue: 18,
+  },
+  {
+    id: 'refreshRate',
+    name: 'Refresh Rate',
+    weight: 5,
+    type: 'benefit',
+    description: 'Hz — smoothness of motion, important for gaming',
+    minValue: 60,
+    maxValue: 240,
+  },
+  {
+    id: 'resolution',
+    name: 'Resolution',
+    weight: 5,
+    type: 'benefit',
+    description: 'Display resolution — sharpness and detail',
     minValue: 1,
     maxValue: 10,
   },
   {
     id: 'battery',
     name: 'Battery Life',
-    weight: 15,
+    weight: 8,
     type: 'benefit',
-    description: 'Typical usage duration in hours',
+    description: 'Typical usage hours on a single charge',
     minValue: 2,
-    maxValue: 20,
+    maxValue: 24,
   },
   {
-    id: 'display',
-    name: 'Display Quality',
-    weight: 10,
-    type: 'benefit',
-    description: 'Resolution, brightness, color accuracy (1-10 scale)',
-    minValue: 1,
-    maxValue: 10,
+    id: 'weight',
+    name: 'Weight',
+    weight: 5,
+    type: 'cost',
+    description: 'Laptop weight in kg (lower is better for portability)',
+    minValue: 0.5,
+    maxValue: 5,
   },
   {
     id: 'build',
     name: 'Build Quality',
-    weight: 10,
+    weight: 7,
     type: 'benefit',
-    description: 'Materials, durability, premium feel (1-10 scale)',
+    description: 'Materials, durability, and premium feel',
     minValue: 1,
     maxValue: 10,
-  },
-  {
-    id: 'portability',
-    name: 'Portability',
-    weight: 10,
-    type: 'benefit',
-    description: 'Weight and size for easy carrying (1-10 scale)',
-    minValue: 1,
-    maxValue: 10,
-  },
-  {
-    id: 'storage',
-    name: 'Storage',
-    weight: 5,
-    type: 'benefit',
-    description: 'SSD capacity in GB',
-    minValue: 128,
-    maxValue: 2000,
   },
 ];
 
-/**
- * Use-case presets with optimized weight distributions
- */
+// ─── Use-Case Presets ────────────────────────────────────────────────────────
+
+export interface UseCasePreset {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  weights: Record<string, number>;
+}
+
 export const USE_CASE_PRESETS: UseCasePreset[] = [
   {
     id: 'software-dev',
     name: 'Software Development',
-    description: 'Coding, compilation, running IDEs and containers',
+    description: 'Coding, compilation, Docker, IDEs',
     icon: 'Code2',
     weights: {
-      price: 20,
-      performance: 30,
-      battery: 15,
-      display: 15,
-      build: 10,
-      portability: 5,
-      storage: 5,
+      price: 15, cpu: 20, gpu: 5, ram: 15, ssd: 10, hdd: 2,
+      displaySize: 5, refreshRate: 3, resolution: 8, battery: 8, weight: 4, build: 5,
     },
   },
   {
     id: 'gaming',
     name: 'Gaming',
-    description: 'High-performance games and graphics-intensive tasks',
+    description: 'High-FPS games, graphics-intensive workloads',
     icon: 'Gamepad2',
     weights: {
-      price: 15,
-      performance: 40,
-      battery: 5,
-      display: 20,
-      build: 10,
-      portability: 5,
-      storage: 5,
+      price: 10, cpu: 15, gpu: 25, ram: 10, ssd: 8, hdd: 2,
+      displaySize: 5, refreshRate: 12, resolution: 5, battery: 3, weight: 2, build: 3,
     },
   },
   {
     id: 'business',
     name: 'Office / Business',
-    description: 'Productivity, meetings, documents, presentations',
+    description: 'Productivity, meetings, presentations',
     icon: 'Briefcase',
     weights: {
-      price: 25,
-      performance: 15,
-      battery: 25,
-      display: 10,
-      build: 10,
-      portability: 10,
-      storage: 5,
+      price: 20, cpu: 10, gpu: 2, ram: 10, ssd: 8, hdd: 5,
+      displaySize: 5, refreshRate: 2, resolution: 5, battery: 18, weight: 8, build: 7,
     },
   },
   {
     id: 'student',
     name: 'Student',
-    description: 'Notes, research, assignments, budget-friendly',
+    description: 'Notes, research, budget-friendly',
     icon: 'GraduationCap',
     weights: {
-      price: 30,
-      performance: 15,
-      battery: 20,
-      display: 10,
-      build: 5,
-      portability: 15,
-      storage: 5,
+      price: 25, cpu: 10, gpu: 3, ram: 8, ssd: 8, hdd: 5,
+      displaySize: 5, refreshRate: 2, resolution: 4, battery: 15, weight: 10, build: 5,
     },
   },
   {
@@ -167,116 +328,82 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'Video editing, graphic design, 3D rendering',
     icon: 'Palette',
     weights: {
-      price: 15,
-      performance: 25,
-      battery: 10,
-      display: 30,
-      build: 10,
-      portability: 5,
-      storage: 5,
+      price: 10, cpu: 15, gpu: 15, ram: 12, ssd: 10, hdd: 3,
+      displaySize: 5, refreshRate: 5, resolution: 12, battery: 5, weight: 3, build: 5,
     },
   },
   {
     id: 'custom',
     name: 'Custom',
-    description: 'Set your own weights based on your priorities',
+    description: 'Set your own weights for each criterion',
     icon: 'Settings',
     weights: {
-      price: 15,
-      performance: 15,
-      battery: 15,
-      display: 15,
-      build: 15,
-      portability: 15,
-      storage: 10,
+      price: 10, cpu: 10, gpu: 10, ram: 8, ssd: 8, hdd: 4,
+      displaySize: 8, refreshRate: 8, resolution: 8, battery: 8, weight: 8, build: 10,
     },
   },
 ];
 
-/**
- * Sample laptops for demonstration
- */
+// ─── Sample Laptops (Indian Market, 2024 Prices) ────────────────────────────
+
 export interface SampleLaptop {
   name: string;
   description: string;
-  scores: {
-    price: number;
-    performance: number;
-    battery: number;
-    display: number;
-    build: number;
-    portability: number;
-    storage: number;
-  };
+  scores: Record<string, number>;
 }
 
 export const SAMPLE_LAPTOPS: SampleLaptop[] = [
   {
     name: 'MacBook Pro 14"',
-    description: 'Apple M3 Pro, 18GB RAM, 512GB SSD',
+    description: 'Apple M3 Pro, 18GB RAM, 512GB SSD, 14" Retina 120Hz',
     scores: {
-      price: 199900,
-      performance: 9,
-      battery: 12,
-      display: 9,
-      build: 9,
-      portability: 7,
-      storage: 512,
+      price: 199900, cpu: 9, gpu: 7, ram: 18, ssd: 512, hdd: 0,
+      displaySize: 14, refreshRate: 120, resolution: 8, battery: 14, weight: 1.6, build: 9,
     },
   },
   {
     name: 'Dell XPS 15',
-    description: 'Intel i7-13700H, 16GB RAM, 512GB SSD',
+    description: 'Intel i7-13700H, 16GB RAM, 512GB SSD, 15.6" FHD+ 60Hz',
     scores: {
-      price: 149900,
-      performance: 8,
-      battery: 10,
-      display: 8,
-      build: 8,
-      portability: 8,
-      storage: 512,
+      price: 149900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 10, weight: 1.86, build: 7,
     },
   },
   {
     name: 'ThinkPad X1 Carbon',
-    description: 'Intel i7-1365U, 16GB RAM, 512GB SSD',
+    description: 'Intel i7-1365U, 16GB RAM, 512GB SSD, 14" 2K 60Hz',
     scores: {
-      price: 139900,
-      performance: 7,
-      battery: 14,
-      display: 7,
-      build: 9,
-      portability: 9,
-      storage: 512,
+      price: 139900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 14, refreshRate: 60, resolution: 7, battery: 15, weight: 1.12, build: 9,
     },
   },
   {
     name: 'ASUS ROG Zephyrus G14',
-    description: 'AMD Ryzen 9, RTX 4060, 16GB RAM, 1TB SSD',
+    description: 'AMD Ryzen 9 7940HS, RTX 4060, 16GB RAM, 1TB SSD, 14" QHD+ 165Hz',
     scores: {
-      price: 159900,
-      performance: 9,
-      battery: 8,
-      display: 8,
-      build: 8,
-      portability: 8,
-      storage: 1000,
+      price: 159900, cpu: 9, gpu: 7, ram: 16, ssd: 1000, hdd: 0,
+      displaySize: 14, refreshRate: 165, resolution: 7, battery: 8, weight: 1.72, build: 7,
     },
   },
   {
     name: 'HP Pavilion 15',
-    description: 'Intel i5-1335U, 8GB RAM, 512GB SSD',
+    description: 'Intel i5-1335U, 8GB RAM, 512GB SSD, 15.6" FHD 60Hz',
     scores: {
-      price: 65000,
-      performance: 6,
-      battery: 8,
-      display: 6,
-      build: 6,
-      portability: 7,
-      storage: 512,
+      price: 55000, cpu: 5, gpu: 1, ram: 8, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 8, weight: 1.75, build: 3,
+    },
+  },
+  {
+    name: 'Acer Nitro V 15',
+    description: 'Intel i5-13420H, RTX 4050, 16GB RAM, 512GB SSD, 15.6" FHD 144Hz',
+    scores: {
+      price: 72990, cpu: 5, gpu: 6, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 144, resolution: 5, battery: 5, weight: 2.1, build: 3,
     },
   },
 ];
+
+// ─── Utility Functions ───────────────────────────────────────────────────────
 
 /**
  * Apply a use-case preset to get criteria with updated weights
@@ -289,32 +416,44 @@ export function applyPreset(presetId: string): Criterion[] {
 
   return LAPTOP_CRITERIA.map(criterion => ({
     ...criterion,
-    weight: preset.weights[criterion.id as keyof typeof preset.weights] || criterion.weight,
+    weight: preset.weights[criterion.id] || criterion.weight,
   }));
 }
 
 /**
- * Get criteria ID to name mapping for display
+ * Get display label for a criterion value (for dropdowns)
  */
-export const CRITERIA_LABELS: Record<string, string> = {
-  price: 'Price (₹)',
-  performance: 'Performance',
-  battery: 'Battery Life (hrs)',
-  display: 'Display Quality',
-  build: 'Build Quality',
-  portability: 'Portability',
-  storage: 'Storage (GB)',
-};
+export function getValueLabel(criterionId: string, value: number): string {
+  const input = CRITERION_INPUTS[criterionId];
+  if (input?.type === 'select' && input.options) {
+    const option = input.options.find(o => o.value === value);
+    return option?.label || String(value);
+  }
+  const unit = input?.unit || '';
+  return `${value}${unit ? ' ' + unit : ''}`;
+}
+
+/**
+ * Get criteria labels for display
+ */
+export const CRITERIA_LABELS: Record<string, string> = Object.fromEntries(
+  LAPTOP_CRITERIA.map(c => [c.id, c.name])
+);
 
 /**
  * Get unit suffix for each criterion
  */
 export const CRITERIA_UNITS: Record<string, string> = {
   price: '₹',
-  performance: '/10',
+  cpu: 'tier',
+  gpu: 'tier',
+  ram: 'GB',
+  ssd: 'GB',
+  hdd: 'GB',
+  displaySize: '"',
+  refreshRate: 'Hz',
+  resolution: 'tier',
   battery: 'hrs',
-  display: '/10',
-  build: '/10',
-  portability: '/10',
-  storage: 'GB',
+  weight: 'kg',
+  build: 'tier',
 };
