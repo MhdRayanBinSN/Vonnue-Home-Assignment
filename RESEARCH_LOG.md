@@ -109,6 +109,36 @@
 | Google | DevOps | netlify deploy next.js app router 404 page not found |
 | Google | DevOps | netlify environment variables next.js production |
 
+### Feb 25 & 26
+
+| Platform | Usage | Query/Prompt |
+|----------|-------|--------------|
+| VS Code | Learning | are 1-10 scores enough for hardware eval or we strictly need real benchmark metrics |
+| VS Code | Feature Building | how to parse real passmark cpu and g3d mark gpu benchmark scores from txt files to the decision engine |
+| VS Code | Learning | explain tdp and gpu benchmarking simple and how they affect weighted decision maths |
+| VS Code | Learning | how to hide complex benchmark scores so ui is compatable for normal usrs |
+| VS Code | Learning | what are risks of ai hallucination in data fetch how to build manual mathematical  method |
+| VS Code | Learning |any trained nlp models on hugging face  |
+| VS Code | Learning | since models can be outdated then how to get the real infos |
+| VS Code | Coding Assistance | i am struggling to parse dom for fallback can u write generic ts util to extract ram and ssd from raw html |
+| VS Code | Refactoring | review my decision-engine.ts parsing logic is messy how to refactor to be modular and scalable |
+| VS Code | Feature Building | how to map massive dataset of cpus including budget tiers and gpus into grouped ui dropdowns |
+| VS Code | Learning | standard dropdown is bad for 12 criteria what are high density ux alternative options |
+| VS Code | Feature Building | can u rewrite layout using table so first criteria column stays sticky when scrolling |
+| VS Code | Learning | how to normalize wildly mixed data types like price and benchmarks in mcdm algorithms |
+| VS Code | Learning | explain topsis algorithm and how its maths differs from wsm |
+| VS Code | Feature Building | lets implement topsis how to calculate euclidean distance to positive and negative ideal in ts |
+| VS Code | Debugging | the react ui is not updating when i use toggle switch between wsm and topsis why state not rerendering |
+| VS Code | Refactoring | decision-engine.ts is having both wsm and topsis propose plan to extract to strategy pattern |
+| VS Code | Documentation | give a small commit msg for sticky comparison table and adding topsis |
+| Google | Learning | cinebech cpu database |
+| Google | Learning | gpu benchmark values |
+| Google | Learning | gpu benchmark database |
+| Google | Learning | huggingface model for gpu becnhmarks |
+| Google | Learning | kaggle dataset for gpu becnh makrs |
+| Google | Learning | Database for cpu and gpu benchmarks |
+| Google | Learning | Topsis algorithm explanation |
+
 ---
 
 ## References
@@ -140,3 +170,46 @@
 ---
 
 
+
+
+### Feb 27
+
+| Platform | Usage | Query/Prompt |
+|----------|-------|--------------|
+| ChatGPT | Learning | How to implement budget constraints in MCDM algorithms |
+| ChatGPT | Learning | Should budget be a weighted criterion or a hard filter |
+| ChatGPT | Learning | TDP impact on laptop performance and battery life |
+| ChatGPT | Learning | How to calculate price-to-performance ratio for hardware |
+| ChatGPT | Learning | Derived metrics in decision support systems |
+| VS Code | Feature Building | Implement budget pre-filter that removes options before running algorithms |
+| VS Code | Feature Building | Add TDP as independent criterion separate from GPU scores |
+| VS Code | Feature Building | Auto-calculate price-to-performance ratio in decision engine |
+| VS Code | Refactoring | Rebalance all preset weights to accommodate new TDP and P2P criteria |
+| VS Code | Feature Building | Add budget input field to PresetSelector component |
+| VS Code | Feature Building | Display filtered options count in ResultsStep |
+| VS Code | Documentation | Create comprehensive ACCURACY_IMPROVEMENTS.md document |
+| Google | Learning | MCDM budget constraints best practices |
+| Google | Learning | TDP vs GPU performance laptop benchmarks |
+| Google | Learning | Price performance ratio calculation methods |
+
+---
+
+## Updated References (Feb 27)
+
+| Source | Link | How It Helped |
+|--------|------|---------------|
+| MCDM Constraints Research | Academic papers | Budget filtering and threshold constraints in MCDM |
+| TDP Technical Specs | Hardware documentation | Understanding thermal design power impact on performance |
+| Value Analysis Methods | Engineering economics | Price-to-performance ratio calculation methodologies |
+
+---
+
+## Additional Accepted/Rejected Decisions (Feb 27)
+
+| AI Suggestion | Action | Reason |
+|---------------|--------|--------|
+| Make budget a weighted criterion | Rejected | Budget should be a hard filter, not a soft preference |
+| Keep TDP hidden in GPU names | Rejected | Extracted as independent criterion for better math accuracy |
+| Manual price-to-performance calculation | Modified | Auto-calculated as derived metric to reduce user effort |
+| Add minimum threshold filters | Deferred | Good idea but out of scope for current deadline |
+| Calculate real PPI for resolution | Deferred | Would improve accuracy but requires more complex calculations |

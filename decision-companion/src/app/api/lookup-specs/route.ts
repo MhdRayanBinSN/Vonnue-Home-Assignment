@@ -11,8 +11,8 @@ VALIDATION RULES (CHECK FIRST):
 ONLY if the input is a valid, recognized laptop model, return a JSON object with these exact keys:
 {
   "price": <number, price in Indian Rupees (₹), approximate MRP>,
-  "cpu": <number, CPU tier: 3=i3/R3, 5=i5/R5, 7=i7/R7, 9=i9/R9, 7=M3, 9=M3Pro, 10=M3Max>,
-  "gpu": <number, GPU tier: 1=Intel UHD/Iris, 2=AMD Radeon Integrated, 3=MX550/570, 5=RTX3050, 6=RTX4050, 7=RTX4060, 8=RTX4070, 10=RTX4080/4090, 4=M3 Integrated, 7=M3Pro GPU, 9=M3Max GPU>,
+  "cpu": <number, Cinebench R23 multi-core score: i3/R3=6000, i5/R5=10000, i7/R7=15000, i9/R9=22000, M3=15000, M3Pro=22000, M3Max=28000>,
+  "gpu": <number, 3DMark TimeSpy score based on GPU model AND TDP: Intel UHD/Iris=1200, AMD Radeon Integrated=3200, MX550/570=2800, M3 Integrated 10-core=5500, RTX3050=6500, RTX4050 60W=8000, RTX4060 40W=8500, RTX4060 65W=11000, RTX4060 115W=13500, M3Pro 18-core=11000, RTX4070 35W=9000, RTX4070 80W=13500, RTX4070 115W=16000, M3Max 40-core=18000, RTX4080 80W=15000, RTX4080 150W=18500, RTX4090=20000. Use the variant closest to the laptop's actual GPU TDP. If TDP unknown, use standard power variant.>,
   "ram": <number, RAM in GB: 4, 8, 16, 18, 24, 32, or 64>,
   "ssd": <number, SSD size in GB: 0, 128, 256, 512, 1000, or 2000>,
   "hdd": <number, HDD size in GB: 0, 500, 1000, or 2000>,

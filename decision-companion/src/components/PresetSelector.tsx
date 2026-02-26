@@ -26,14 +26,25 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function PresetSelector() {
-  const { state, setPreset, loadSampleLaptops, nextStep } = useApp();
+  const { state, setPreset, loadSampleLaptops, nextStep, dispatch } = useApp();
   const { selectedPreset, problem } = state;
+  const [budgetLimit, setBudgetLimit] = React.useState<string>('');
 
   const handlePresetSelect = (presetId: string) => {
     setPreset(presetId);
   };
 
   const handleContinue = () => {
+    // Save budget limit to problem state
+    if (budgetLimit && !isNaN(Number(budgetLimit))) {
+      dispatch({
+        type: 'SET_PROBLEM',
+        payload: {
+          ...problem,
+          budgetLimit: Number(budgetLimit),
+        },
+      });
+    }
     nextStep();
   };
 
@@ -125,6 +136,44 @@ export function PresetSelector() {
           </div>
           <p className="text-xs text-slate-500 mt-4">
             * You can adjust these weights in the Criteria step
+          </p>
+        </div>
+      )}
+
+      {/* Budget Filter (Optional) */}
+      {selectedPreset && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6">
+          <h3 className="font-semibold text-amber-800 mb-3 flex items-center">
+            <Target className="w-5 h-5 mr-2" />
+            Set Your Budget (Optional)
+          </h3>
+          <p className="text-sm text-amber-700 mb-4">
+            Laptops exceeding this budget will be automatically filtered out before analysis.
+          </p>
+          <div className="flex items-center space-x-3">
+            <div className="flex-1 max-w-xs">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-medium">₹</span>
+                <input
+                  type="number"
+                  value={budgetLimit}
+                  onChange={(e) => setBudgetLimit(e.target.value)}
+                  placeholder="e.g., 100000"
+                  min="20000"
+                  max="500000"
+                  step="5000"
+                  className="w-full pl-8 pr-4 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+              </div>
+            </div>
+            {budgetLimit && !isNaN(Number(budgetLimit)) && (
+              <div className="text-sm text-amber-700 font-medium">
+                Max: ₹{Number(budgetLimit).toLocaleString('en-IN')}
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-amber-600 mt-3">
+            💡 Tip: Setting a budget improves accuracy by removing unrealistic options from comparison.
           </p>
         </div>
       )}

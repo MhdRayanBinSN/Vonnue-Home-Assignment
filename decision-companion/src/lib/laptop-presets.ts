@@ -40,31 +40,44 @@ export const CRITERION_INPUTS: Record<string, CriterionInputConfig> = {
   cpu: {
     type: 'select',
     options: [
-      { label: 'Intel i3 / Ryzen 3', value: 3 },
-      { label: 'Intel i5 / Ryzen 5', value: 5 },
-      { label: 'Intel i7 / Ryzen 7', value: 7 },
-      { label: 'Intel i9 / Ryzen 9', value: 9 },
-      { label: 'Apple M3', value: 7 },
-      { label: 'Apple M3 Pro', value: 9 },
-      { label: 'Apple M3 Max', value: 10 },
+      { label: 'Intel i3 / Ryzen 3 (Cinebench ~6000)', value: 6000 },
+      { label: 'Intel i5 / Ryzen 5 (Cinebench ~10000)', value: 10000 },
+      { label: 'Intel i7 / Ryzen 7 (Cinebench ~15000)', value: 15000 },
+      { label: 'Apple M3 (Cinebench ~15000)', value: 15000 },
+      { label: 'AMD Ryzen 9 / Intel i9 (Cinebench ~22000)', value: 22000 },
+      { label: 'Apple M3 Pro (Cinebench ~22000)', value: 22000 },
+      { label: 'Apple M3 Max (Cinebench ~28000)', value: 28000 },
     ],
   },
   gpu: {
     type: 'select',
     options: [
-      { label: 'Integrated (Intel UHD / Iris)', value: 1 },
-      { label: 'Integrated (AMD Radeon)', value: 2 },
-      { label: 'NVIDIA MX550 / MX570', value: 3 },
-      { label: 'NVIDIA RTX 3050', value: 5 },
-      { label: 'NVIDIA RTX 4050', value: 6 },
-      { label: 'NVIDIA RTX 4060', value: 7 },
-      { label: 'NVIDIA RTX 4070', value: 8 },
-      { label: 'NVIDIA RTX 4080 / 4090', value: 10 },
-      { label: 'Apple M3 (Integrated)', value: 4 },
-      { label: 'Apple M3 Pro GPU', value: 7 },
-      { label: 'Apple M3 Max GPU', value: 9 },
+      // Integrated GPUs
+      { label: 'Integrated — Intel UHD / Iris Xe (3DMark ~1200)', value: 1200 },
+      { label: 'Integrated — AMD Radeon 610M/680M (3DMark ~3200)', value: 3200 },
+      { label: 'Integrated — Apple M3 10-core (3DMark ~5500)', value: 5500 },
+      { label: 'Integrated — Apple M3 Pro 18-core (3DMark ~11000)', value: 11000 },
+      { label: 'Integrated — Apple M3 Max 40-core (3DMark ~18000)', value: 18000 },
+      // Entry dedicated
+      { label: 'NVIDIA MX550 / MX570 (3DMark ~2800)', value: 2800 },
+      { label: 'NVIDIA RTX 3050 Laptop (3DMark ~6500)', value: 6500 },
+      // RTX 4050
+      { label: 'NVIDIA RTX 4050 Laptop — 60W Standard (3DMark ~8000)', value: 8000 },
+      // RTX 4060 — TDP variants
+      { label: 'NVIDIA RTX 4060 Laptop — Low Power 40W (3DMark ~8500)', value: 8500 },
+      { label: 'NVIDIA RTX 4060 Laptop — Standard 65W (3DMark ~11000)', value: 11000 },
+      { label: 'NVIDIA RTX 4060 Laptop — High Power 115W (3DMark ~13500)', value: 13500 },
+      // RTX 4070 — TDP variants
+      { label: 'NVIDIA RTX 4070 Laptop — Low Power 35W (3DMark ~9000)', value: 9000 },
+      { label: 'NVIDIA RTX 4070 Laptop — Standard 80W (3DMark ~13500)', value: 13500 },
+      { label: 'NVIDIA RTX 4070 Laptop — High Power 115W (3DMark ~16000)', value: 16000 },
+      // RTX 4080/4090
+      { label: 'NVIDIA RTX 4080 Laptop — Standard 80W (3DMark ~15000)', value: 15000 },
+      { label: 'NVIDIA RTX 4080 Laptop — Full Power 150W (3DMark ~18500)', value: 18500 },
+      { label: 'NVIDIA RTX 4090 Laptop — Full Power 150W+ (3DMark ~20000)', value: 20000 },
     ],
   },
+
   ram: {
     type: 'select',
     options: [
@@ -153,6 +166,27 @@ export const CRITERION_INPUTS: Record<string, CriterionInputConfig> = {
       { label: 'Premium (CNC Aluminum / Magnesium)', value: 9 },
     ],
   },
+  tdp: {
+    type: 'select',
+    options: [
+      { label: '15W (Ultra Low Power - Fanless)', value: 15 },
+      { label: '28W (Low Power - Thin & Light)', value: 28 },
+      { label: '35W (Efficient - Ultrabooks)', value: 35 },
+      { label: '45W (Standard - Mainstream)', value: 45 },
+      { label: '65W (Performance - Gaming/Workstation)', value: 65 },
+      { label: '80W (High Performance)', value: 80 },
+      { label: '115W (Maximum Performance)', value: 115 },
+      { label: '150W+ (Desktop Replacement)', value: 150 },
+    ],
+  },
+  pricePerformance: {
+    type: 'number',
+    unit: 'score',
+    placeholder: 'Auto-calculated',
+    min: 0,
+    max: 1,
+    step: 0.001,
+  },
 };
 
 // ─── Criteria Definitions ────────────────────────────────────────────────────
@@ -175,18 +209,18 @@ export const LAPTOP_CRITERIA: Criterion[] = [
     name: 'CPU',
     weight: 12,
     type: 'benefit',
-    description: 'Processor tier — affects compilation, multitasking',
-    minValue: 1,
-    maxValue: 10,
+    description: 'Cinebench R23 multi-core score — real CPU performance benchmark',
+    minValue: 6000,
+    maxValue: 28000,
   },
   {
     id: 'gpu',
     name: 'GPU',
     weight: 12,
     type: 'benefit',
-    description: 'Graphics — integrated vs dedicated, critical for gaming/3D',
-    minValue: 1,
-    maxValue: 10,
+    description: '3DMark TimeSpy score — real GPU performance benchmark',
+    minValue: 1200,
+    maxValue: 20000,
   },
   {
     id: 'ram',
@@ -269,6 +303,24 @@ export const LAPTOP_CRITERIA: Criterion[] = [
     minValue: 1,
     maxValue: 10,
   },
+  {
+    id: 'tdp',
+    name: 'TDP (Power Draw)',
+    weight: 5,
+    type: 'cost',
+    description: 'Thermal Design Power in Watts — affects heat, noise, and battery drain (lower is better)',
+    minValue: 15,
+    maxValue: 150,
+  },
+  {
+    id: 'pricePerformance',
+    name: 'Price-to-Performance',
+    weight: 0, // Derived metric, not weighted by default
+    type: 'benefit',
+    description: 'Value score: (CPU + GPU) / Price — bang for buck (auto-calculated)',
+    minValue: 0,
+    maxValue: 1,
+  },
 ];
 
 // ─── Use-Case Presets ────────────────────────────────────────────────────────
@@ -288,8 +340,8 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'Coding, compilation, Docker, IDEs',
     icon: 'Code2',
     weights: {
-      price: 15, cpu: 20, gpu: 5, ram: 15, ssd: 10, hdd: 2,
-      displaySize: 5, refreshRate: 3, resolution: 8, battery: 8, weight: 4, build: 5,
+      price: 15, cpu: 18, gpu: 4, ram: 14, ssd: 10, hdd: 2,
+      displaySize: 5, refreshRate: 3, resolution: 8, battery: 8, weight: 4, build: 5, tdp: 4, pricePerformance: 0,
     },
   },
   {
@@ -298,8 +350,8 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'High-FPS games, graphics-intensive workloads',
     icon: 'Gamepad2',
     weights: {
-      price: 10, cpu: 15, gpu: 25, ram: 10, ssd: 8, hdd: 2,
-      displaySize: 5, refreshRate: 12, resolution: 5, battery: 3, weight: 2, build: 3,
+      price: 8, cpu: 14, gpu: 24, ram: 10, ssd: 8, hdd: 2,
+      displaySize: 5, refreshRate: 12, resolution: 5, battery: 2, weight: 2, build: 3, tdp: 5, pricePerformance: 0,
     },
   },
   {
@@ -308,8 +360,8 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'Productivity, meetings, presentations',
     icon: 'Briefcase',
     weights: {
-      price: 20, cpu: 10, gpu: 2, ram: 10, ssd: 8, hdd: 5,
-      displaySize: 5, refreshRate: 2, resolution: 5, battery: 18, weight: 8, build: 7,
+      price: 18, cpu: 9, gpu: 2, ram: 9, ssd: 8, hdd: 5,
+      displaySize: 5, refreshRate: 2, resolution: 5, battery: 17, weight: 8, build: 7, tdp: 5, pricePerformance: 0,
     },
   },
   {
@@ -318,8 +370,8 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'Notes, research, budget-friendly',
     icon: 'GraduationCap',
     weights: {
-      price: 25, cpu: 10, gpu: 3, ram: 8, ssd: 8, hdd: 5,
-      displaySize: 5, refreshRate: 2, resolution: 4, battery: 15, weight: 10, build: 5,
+      price: 20, cpu: 9, gpu: 3, ram: 8, ssd: 8, hdd: 5,
+      displaySize: 5, refreshRate: 2, resolution: 4, battery: 14, weight: 10, build: 4, tdp: 3, pricePerformance: 5,
     },
   },
   {
@@ -328,8 +380,8 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     description: 'Video editing, graphic design, 3D rendering',
     icon: 'Palette',
     weights: {
-      price: 10, cpu: 15, gpu: 15, ram: 12, ssd: 10, hdd: 3,
-      displaySize: 5, refreshRate: 5, resolution: 12, battery: 5, weight: 3, build: 5,
+      price: 8, cpu: 14, gpu: 14, ram: 12, ssd: 10, hdd: 3,
+      displaySize: 5, refreshRate: 5, resolution: 12, battery: 5, weight: 3, build: 5, tdp: 4, pricePerformance: 0,
     },
   },
   {
@@ -339,7 +391,7 @@ export const USE_CASE_PRESETS: UseCasePreset[] = [
     icon: 'Settings',
     weights: {
       price: 10, cpu: 10, gpu: 10, ram: 8, ssd: 8, hdd: 4,
-      displaySize: 8, refreshRate: 8, resolution: 8, battery: 8, weight: 8, build: 10,
+      displaySize: 8, refreshRate: 8, resolution: 8, battery: 8, weight: 8, build: 10, tdp: 0, pricePerformance: 0,
     },
   },
 ];
@@ -357,48 +409,48 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'MacBook Pro 14"',
     description: 'Apple M3 Pro, 18GB RAM, 512GB SSD, 14" Retina 120Hz',
     scores: {
-      price: 199900, cpu: 9, gpu: 7, ram: 18, ssd: 512, hdd: 0,
-      displaySize: 14, refreshRate: 120, resolution: 8, battery: 14, weight: 1.6, build: 9,
+      price: 199900, cpu: 22000, gpu: 11000, ram: 18, ssd: 512, hdd: 0,
+      displaySize: 14, refreshRate: 120, resolution: 8, battery: 14, weight: 1.6, build: 9, tdp: 35, pricePerformance: 0,
     },
   },
   {
     name: 'Dell XPS 15',
     description: 'Intel i7-13700H, 16GB RAM, 512GB SSD, 15.6" FHD+ 60Hz',
     scores: {
-      price: 149900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
-      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 10, weight: 1.86, build: 7,
+      price: 149900, cpu: 15000, gpu: 1200, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 10, weight: 1.86, build: 7, tdp: 45, pricePerformance: 0,
     },
   },
   {
     name: 'ThinkPad X1 Carbon',
     description: 'Intel i7-1365U, 16GB RAM, 512GB SSD, 14" 2K 60Hz',
     scores: {
-      price: 139900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
-      displaySize: 14, refreshRate: 60, resolution: 7, battery: 15, weight: 1.12, build: 9,
+      price: 139900, cpu: 12000, gpu: 1200, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 14, refreshRate: 60, resolution: 7, battery: 15, weight: 1.12, build: 9, tdp: 28, pricePerformance: 0,
     },
   },
   {
     name: 'ASUS ROG Zephyrus G14',
     description: 'AMD Ryzen 9 7940HS, RTX 4060, 16GB RAM, 1TB SSD, 14" QHD+ 165Hz',
     scores: {
-      price: 159900, cpu: 9, gpu: 7, ram: 16, ssd: 1000, hdd: 0,
-      displaySize: 14, refreshRate: 165, resolution: 7, battery: 8, weight: 1.72, build: 7,
+      price: 159900, cpu: 20000, gpu: 11000, ram: 16, ssd: 1000, hdd: 0,
+      displaySize: 14, refreshRate: 165, resolution: 7, battery: 8, weight: 1.72, build: 7, tdp: 65, pricePerformance: 0,
     },
   },
   {
     name: 'HP Pavilion 15',
     description: 'Intel i5-1335U, 8GB RAM, 512GB SSD, 15.6" FHD 60Hz',
     scores: {
-      price: 55000, cpu: 5, gpu: 1, ram: 8, ssd: 512, hdd: 0,
-      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 8, weight: 1.75, build: 3,
+      price: 55000, cpu: 9500, gpu: 1200, ram: 8, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 8, weight: 1.75, build: 3, tdp: 28, pricePerformance: 0,
     },
   },
   {
     name: 'Acer Nitro V 15',
     description: 'Intel i5-13420H, RTX 4050, 16GB RAM, 512GB SSD, 15.6" FHD 144Hz',
     scores: {
-      price: 72990, cpu: 5, gpu: 6, ram: 16, ssd: 512, hdd: 0,
-      displaySize: 15.6, refreshRate: 144, resolution: 5, battery: 5, weight: 2.1, build: 3,
+      price: 72990, cpu: 10000, gpu: 8000, ram: 16, ssd: 512, hdd: 0,
+      displaySize: 15.6, refreshRate: 144, resolution: 5, battery: 5, weight: 2.1, build: 3, tdp: 65, pricePerformance: 0,
     },
   },
 ];
@@ -456,4 +508,16 @@ export const CRITERIA_UNITS: Record<string, string> = {
   battery: 'hrs',
   weight: 'kg',
   build: 'tier',
+  tdp: 'W',
+  pricePerformance: '',
 };
+
+/**
+ * Calculate price-to-performance ratio for a laptop
+ * Formula: (CPU_score + GPU_score) / Price
+ * Higher is better (more performance per rupee)
+ */
+export function calculatePricePerformance(cpu: number, gpu: number, price: number): number {
+  if (price <= 0) return 0;
+  return ((cpu + gpu) / price) * 1000; // Multiply by 1000 for readable scale
+}
