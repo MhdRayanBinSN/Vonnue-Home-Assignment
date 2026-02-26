@@ -40,31 +40,44 @@ export const CRITERION_INPUTS: Record<string, CriterionInputConfig> = {
   cpu: {
     type: 'select',
     options: [
-      { label: 'Intel i3 / Ryzen 3', value: 3 },
-      { label: 'Intel i5 / Ryzen 5', value: 5 },
-      { label: 'Intel i7 / Ryzen 7', value: 7 },
-      { label: 'Intel i9 / Ryzen 9', value: 9 },
-      { label: 'Apple M3', value: 7 },
-      { label: 'Apple M3 Pro', value: 9 },
-      { label: 'Apple M3 Max', value: 10 },
+      { label: 'Intel i3 / Ryzen 3 (Cinebench ~6000)', value: 6000 },
+      { label: 'Intel i5 / Ryzen 5 (Cinebench ~10000)', value: 10000 },
+      { label: 'Intel i7 / Ryzen 7 (Cinebench ~15000)', value: 15000 },
+      { label: 'Apple M3 (Cinebench ~15000)', value: 15000 },
+      { label: 'AMD Ryzen 9 / Intel i9 (Cinebench ~22000)', value: 22000 },
+      { label: 'Apple M3 Pro (Cinebench ~22000)', value: 22000 },
+      { label: 'Apple M3 Max (Cinebench ~28000)', value: 28000 },
     ],
   },
   gpu: {
     type: 'select',
     options: [
-      { label: 'Integrated (Intel UHD / Iris)', value: 1 },
-      { label: 'Integrated (AMD Radeon)', value: 2 },
-      { label: 'NVIDIA MX550 / MX570', value: 3 },
-      { label: 'NVIDIA RTX 3050', value: 5 },
-      { label: 'NVIDIA RTX 4050', value: 6 },
-      { label: 'NVIDIA RTX 4060', value: 7 },
-      { label: 'NVIDIA RTX 4070', value: 8 },
-      { label: 'NVIDIA RTX 4080 / 4090', value: 10 },
-      { label: 'Apple M3 (Integrated)', value: 4 },
-      { label: 'Apple M3 Pro GPU', value: 7 },
-      { label: 'Apple M3 Max GPU', value: 9 },
+      // Integrated GPUs
+      { label: 'Integrated — Intel UHD / Iris Xe (3DMark ~1200)', value: 1200 },
+      { label: 'Integrated — AMD Radeon 610M/680M (3DMark ~3200)', value: 3200 },
+      { label: 'Integrated — Apple M3 10-core (3DMark ~5500)', value: 5500 },
+      { label: 'Integrated — Apple M3 Pro 18-core (3DMark ~11000)', value: 11000 },
+      { label: 'Integrated — Apple M3 Max 40-core (3DMark ~18000)', value: 18000 },
+      // Entry dedicated
+      { label: 'NVIDIA MX550 / MX570 (3DMark ~2800)', value: 2800 },
+      { label: 'NVIDIA RTX 3050 Laptop (3DMark ~6500)', value: 6500 },
+      // RTX 4050
+      { label: 'NVIDIA RTX 4050 Laptop — 60W Standard (3DMark ~8000)', value: 8000 },
+      // RTX 4060 — TDP variants
+      { label: 'NVIDIA RTX 4060 Laptop — Low Power 40W (3DMark ~8500)', value: 8500 },
+      { label: 'NVIDIA RTX 4060 Laptop — Standard 65W (3DMark ~11000)', value: 11000 },
+      { label: 'NVIDIA RTX 4060 Laptop — High Power 115W (3DMark ~13500)', value: 13500 },
+      // RTX 4070 — TDP variants
+      { label: 'NVIDIA RTX 4070 Laptop — Low Power 35W (3DMark ~9000)', value: 9000 },
+      { label: 'NVIDIA RTX 4070 Laptop — Standard 80W (3DMark ~13500)', value: 13500 },
+      { label: 'NVIDIA RTX 4070 Laptop — High Power 115W (3DMark ~16000)', value: 16000 },
+      // RTX 4080/4090
+      { label: 'NVIDIA RTX 4080 Laptop — Standard 80W (3DMark ~15000)', value: 15000 },
+      { label: 'NVIDIA RTX 4080 Laptop — Full Power 150W (3DMark ~18500)', value: 18500 },
+      { label: 'NVIDIA RTX 4090 Laptop — Full Power 150W+ (3DMark ~20000)', value: 20000 },
     ],
   },
+
   ram: {
     type: 'select',
     options: [
@@ -175,18 +188,18 @@ export const LAPTOP_CRITERIA: Criterion[] = [
     name: 'CPU',
     weight: 12,
     type: 'benefit',
-    description: 'Processor tier — affects compilation, multitasking',
-    minValue: 1,
-    maxValue: 10,
+    description: 'Cinebench R23 multi-core score — real CPU performance benchmark',
+    minValue: 6000,
+    maxValue: 28000,
   },
   {
     id: 'gpu',
     name: 'GPU',
     weight: 12,
     type: 'benefit',
-    description: 'Graphics — integrated vs dedicated, critical for gaming/3D',
-    minValue: 1,
-    maxValue: 10,
+    description: '3DMark TimeSpy score — real GPU performance benchmark',
+    minValue: 1200,
+    maxValue: 20000,
   },
   {
     id: 'ram',
@@ -357,7 +370,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'MacBook Pro 14"',
     description: 'Apple M3 Pro, 18GB RAM, 512GB SSD, 14" Retina 120Hz',
     scores: {
-      price: 199900, cpu: 9, gpu: 7, ram: 18, ssd: 512, hdd: 0,
+      price: 199900, cpu: 22000, gpu: 11000, ram: 18, ssd: 512, hdd: 0,
       displaySize: 14, refreshRate: 120, resolution: 8, battery: 14, weight: 1.6, build: 9,
     },
   },
@@ -365,7 +378,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'Dell XPS 15',
     description: 'Intel i7-13700H, 16GB RAM, 512GB SSD, 15.6" FHD+ 60Hz',
     scores: {
-      price: 149900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
+      price: 149900, cpu: 15000, gpu: 1200, ram: 16, ssd: 512, hdd: 0,
       displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 10, weight: 1.86, build: 7,
     },
   },
@@ -373,7 +386,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'ThinkPad X1 Carbon',
     description: 'Intel i7-1365U, 16GB RAM, 512GB SSD, 14" 2K 60Hz',
     scores: {
-      price: 139900, cpu: 7, gpu: 1, ram: 16, ssd: 512, hdd: 0,
+      price: 139900, cpu: 12000, gpu: 1200, ram: 16, ssd: 512, hdd: 0,
       displaySize: 14, refreshRate: 60, resolution: 7, battery: 15, weight: 1.12, build: 9,
     },
   },
@@ -381,7 +394,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'ASUS ROG Zephyrus G14',
     description: 'AMD Ryzen 9 7940HS, RTX 4060, 16GB RAM, 1TB SSD, 14" QHD+ 165Hz',
     scores: {
-      price: 159900, cpu: 9, gpu: 7, ram: 16, ssd: 1000, hdd: 0,
+      price: 159900, cpu: 20000, gpu: 11000, ram: 16, ssd: 1000, hdd: 0,
       displaySize: 14, refreshRate: 165, resolution: 7, battery: 8, weight: 1.72, build: 7,
     },
   },
@@ -389,7 +402,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'HP Pavilion 15',
     description: 'Intel i5-1335U, 8GB RAM, 512GB SSD, 15.6" FHD 60Hz',
     scores: {
-      price: 55000, cpu: 5, gpu: 1, ram: 8, ssd: 512, hdd: 0,
+      price: 55000, cpu: 9500, gpu: 1200, ram: 8, ssd: 512, hdd: 0,
       displaySize: 15.6, refreshRate: 60, resolution: 5, battery: 8, weight: 1.75, build: 3,
     },
   },
@@ -397,7 +410,7 @@ export const SAMPLE_LAPTOPS: SampleLaptop[] = [
     name: 'Acer Nitro V 15',
     description: 'Intel i5-13420H, RTX 4050, 16GB RAM, 512GB SSD, 15.6" FHD 144Hz',
     scores: {
-      price: 72990, cpu: 5, gpu: 6, ram: 16, ssd: 512, hdd: 0,
+      price: 72990, cpu: 10000, gpu: 8000, ram: 16, ssd: 512, hdd: 0,
       displaySize: 15.6, refreshRate: 144, resolution: 5, battery: 5, weight: 2.1, build: 3,
     },
   },
