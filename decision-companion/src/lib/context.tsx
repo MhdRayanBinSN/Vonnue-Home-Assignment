@@ -46,6 +46,8 @@ type AppAction =
   | { type: 'SET_RESULT'; payload: DecisionResult }
   | { type: 'SET_ANALYZING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_BUDGET_LIMIT'; payload: number | undefined }
+  | { type: 'SET_MIN_THRESHOLD'; payload: { criterionId: string; value: number | undefined } }
   | { type: 'RESET' };
 
 /**
@@ -241,6 +243,34 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+
+    case 'SET_BUDGET_LIMIT':
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          budgetLimit: action.payload,
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
+
+    case 'SET_MIN_THRESHOLD':
+      const newThresholds = { ...state.problem.minThresholds };
+      if (action.payload.value === undefined) {
+        delete newThresholds[action.payload.criterionId];
+      } else {
+        newThresholds[action.payload.criterionId] = action.payload.value;
+      }
+      return {
+        ...state,
+        problem: {
+          ...state.problem,
+          minThresholds: Object.keys(newThresholds).length > 0 ? newThresholds : undefined,
+          updatedAt: new Date(),
+        },
+        result: null,
+      };
 
     case 'RESET':
       return { ...initialState, problem: createLaptopProblem() };

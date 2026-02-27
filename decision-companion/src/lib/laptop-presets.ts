@@ -497,17 +497,17 @@ export const CRITERIA_LABELS: Record<string, string> = Object.fromEntries(
  */
 export const CRITERIA_UNITS: Record<string, string> = {
   price: '₹',
-  cpu: 'tier',
-  gpu: 'tier',
+  cpu: '', // Cinebench R23 score (no unit needed, it's a benchmark score)
+  gpu: '', // 3DMark TimeSpy score (no unit needed, it's a benchmark score)
   ram: 'GB',
   ssd: 'GB',
   hdd: 'GB',
   displaySize: '"',
   refreshRate: 'Hz',
-  resolution: 'tier',
+  resolution: 'tier', // Quality tier (HD, FHD, 4K) - intentionally subjective
   battery: 'hrs',
   weight: 'kg',
-  build: 'tier',
+  build: 'tier', // Quality tier (Plastic, Aluminum, Premium) - intentionally subjective
   tdp: 'W',
   pricePerformance: '',
 };

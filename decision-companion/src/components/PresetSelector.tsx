@@ -29,6 +29,8 @@ export function PresetSelector() {
   const { state, setPreset, loadSampleLaptops, nextStep, dispatch } = useApp();
   const { selectedPreset, problem } = state;
   const [budgetLimit, setBudgetLimit] = React.useState<string>('');
+  const [showThresholds, setShowThresholds] = React.useState(false);
+  const [thresholds, setThresholds] = React.useState<Record<string, string>>({});
 
   const handlePresetSelect = (presetId: string) => {
     setPreset(presetId);
@@ -38,13 +40,21 @@ export function PresetSelector() {
     // Save budget limit to problem state
     if (budgetLimit && !isNaN(Number(budgetLimit))) {
       dispatch({
-        type: 'SET_PROBLEM',
-        payload: {
-          ...problem,
-          budgetLimit: Number(budgetLimit),
-        },
+        type: 'SET_BUDGET_LIMIT',
+        payload: Number(budgetLimit),
       });
     }
+    
+    // Save thresholds
+    Object.entries(thresholds).forEach(([criterionId, value]) => {
+      if (value && !isNaN(Number(value))) {
+        dispatch({
+          type: 'SET_MIN_THRESHOLD',
+          payload: { criterionId, value: Number(value) },
+        });
+      }
+    });
+    
     nextStep();
   };
 
@@ -174,6 +184,106 @@ export function PresetSelector() {
           </div>
           <p className="text-xs text-amber-600 mt-3">
             💡 Tip: Setting a budget improves accuracy by removing unrealistic options from comparison.
+          </p>
+        </div>
+      )}
+
+      {/* Minimum Thresholds (Optional) */}
+      {selectedPreset && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-blue-800 flex items-center">
+              <CheckCircle2 className="w-5 h-5 mr-2" />
+              Set Deal-Breakers (Optional)
+            </h3>
+            <button
+              onClick={() => setShowThresholds(!showThresholds)}
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+            >
+              {showThresholds ? 'Hide' : 'Show'}
+              <svg className={`w-4 h-4 ml-1 transition-transform ${showThresholds ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          <p className="text-sm text-blue-700 mb-4">
+            Set minimum acceptable values. Laptops not meeting these will be filtered out.
+          </p>
+          
+          {showThresholds && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {/* RAM Threshold */}
+              <div>
+                <label className="block text-sm font-medium text-blue-800 mb-2">
+                  Minimum RAM (GB)
+                </label>
+                <input
+                  type="number"
+                  value={thresholds['ram'] || ''}
+                  onChange={(e) => setThresholds({ ...thresholds, ram: e.target.value })}
+                  placeholder="e.g., 16"
+                  min="4"
+                  max="64"
+                  step="4"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Battery Threshold */}
+              <div>
+                <label className="block text-sm font-medium text-blue-800 mb-2">
+                  Minimum Battery (hours)
+                </label>
+                <input
+                  type="number"
+                  value={thresholds['battery'] || ''}
+                  onChange={(e) => setThresholds({ ...thresholds, battery: e.target.value })}
+                  placeholder="e.g., 8"
+                  min="1"
+                  max="24"
+                  step="1"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* SSD Threshold */}
+              <div>
+                <label className="block text-sm font-medium text-blue-800 mb-2">
+                  Minimum SSD (GB)
+                </label>
+                <input
+                  type="number"
+                  value={thresholds['ssd'] || ''}
+                  onChange={(e) => setThresholds({ ...thresholds, ssd: e.target.value })}
+                  placeholder="e.g., 512"
+                  min="128"
+                  max="2000"
+                  step="128"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Weight Threshold (max) */}
+              <div>
+                <label className="block text-sm font-medium text-blue-800 mb-2">
+                  Maximum Weight (kg)
+                </label>
+                <input
+                  type="number"
+                  value={thresholds['weight'] || ''}
+                  onChange={(e) => setThresholds({ ...thresholds, weight: e.target.value })}
+                  placeholder="e.g., 2.0"
+                  min="0.5"
+                  max="5"
+                  step="0.1"
+                  className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+          )}
+          
+          <p className="text-xs text-blue-600 mt-3">
+            💡 Example: "Must have at least 16GB RAM" or "Battery must be at least 8 hours"
           </p>
         </div>
       )}

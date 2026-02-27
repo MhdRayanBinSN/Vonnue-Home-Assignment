@@ -224,3 +224,29 @@ export interface TopsisResult {
   /** Whether TOPSIS winner matches WSM winner */
   winnerAgreement: boolean;
 }
+
+// ─── AI Suggestions Types ──────────────────────────────────────────────────────
+
+/**
+ * AI-generated suggestion for decision improvement
+ */
+export interface AISuggestion {
+  id: string;
+  type: 'warning' | 'insight' | 'recommendation' | 'edge-case';
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  title: string;
+  description: string;
+  actionable: boolean;
+  action?: string;
+  reasoning: string;
+}
+
+/**
+ * Complete AI analysis with edge case detection
+ */
+export interface AIAnalysis {
+  suggestions: AISuggestion[];
+  edgeCasesDetected: string[];
+  overallConfidence: number; // 0-100
+  recommendationStrength: 'very-strong' | 'strong' | 'moderate' | 'weak' | 'very-weak';
+}

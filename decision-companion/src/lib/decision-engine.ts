@@ -270,14 +270,27 @@ export class DecisionEngine {
     const runnerUp = results[1];
 
     let confidence: 'high' | 'medium' | 'low' = 'medium';
+    let confidenceReason = '';
+    
     if (results.length > 1) {
       const diff = winner.finalScore - runnerUp.finalScore;
       const avg = (winner.finalScore + runnerUp.finalScore) / 2;
       const relDiff = avg > 0 ? diff / avg : 0;
-      if (relDiff > 0.2) confidence = 'high';
-      else if (relDiff < 0.05) confidence = 'low';
+      const percentDiff = relDiff * 100;
+      
+      if (relDiff > 0.2) {
+        confidence = 'high';
+        confidenceReason = `Winner leads by ${percentDiff.toFixed(1)}% - clear advantage`;
+      } else if (relDiff < 0.05) {
+        confidence = 'low';
+        confidenceReason = `Only ${percentDiff.toFixed(1)}% difference - too close to call`;
+      } else {
+        confidence = 'medium';
+        confidenceReason = `${percentDiff.toFixed(1)}% difference - moderate advantage`;
+      }
     } else {
       confidence = 'high';
+      confidenceReason = 'Only one option available';
     }
 
     // Top-3 contributing criteria
@@ -307,7 +320,7 @@ export class DecisionEngine {
     const summary =
       `Based on WSM analysis across ${this.problem.criteria.length} criteria, ` +
       `"${winner.optionName}" is recommended with a score of ${winner.normalizedScore.toFixed(1)}%. ` +
-      (runnerUp ? `Runner-up "${runnerUp.optionName}" scored ${runnerUp.normalizedScore.toFixed(1)}%.` : '');
+      (runnerUp ? `Runner-up "${runnerUp.optionName}" scored ${runnerUp.normalizedScore.toFixed(1)}%. ${confidenceReason}` : '');
 
     return {
       optionId: winner.optionId,
