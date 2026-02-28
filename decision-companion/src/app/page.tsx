@@ -101,7 +101,7 @@ function DecisionCompanion() {
               </span>
             </div>
             <div className="flex items-center space-x-4 text-sm text-slate-500">
-              <a href="#" className="hover:text-primary-600 transition-colors flex items-center">
+              <a href="/flowchart" className="hover:text-primary-600 transition-colors flex items-center">
                 <HelpCircle className="w-4 h-4 mr-1" />
                 How it works
               </a>

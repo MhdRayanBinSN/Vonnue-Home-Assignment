@@ -44,7 +44,7 @@ export function ResultsStep() {
   const [practicalAdvice, setPracticalAdvice] = useState<PracticalAdvice | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'wsm' | 'topsis'>('wsm');
+  const [activeView, setActiveView] = useState<'wsm' | 'topsis'>('topsis');
   const [showExplanation, setShowExplanation] = useState(false);
   const [showSensitivity, setShowSensitivity] = useState(false);
   const [showAdvice, setShowAdvice] = useState(true);
@@ -262,6 +262,21 @@ export function ResultsStep() {
       {/* Method Tab Switcher */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 mb-6 flex gap-2">
         <button
+          onClick={() => setActiveView('topsis')}
+          className={`flex-1 flex flex-col items-center py-3 px-4 rounded-lg transition-all relative ${activeView === 'topsis'
+            ? 'bg-violet-600 text-white shadow'
+            : 'text-slate-600 hover:bg-slate-100'
+            }`}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold">TOPSIS</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${activeView === 'topsis' ? 'bg-violet-400/30 text-violet-50' : 'bg-slate-200 text-slate-500'}`}>Primary Engine</span>
+          </div>
+          <span className={`text-xs mt-0.5 ${activeView === 'topsis' ? 'text-violet-100' : 'text-slate-400'}`}>
+            Closeness to Ideal Balance
+          </span>
+        </button>
+        <button
           onClick={() => setActiveView('wsm')}
           className={`flex-1 flex flex-col items-center py-3 px-4 rounded-lg transition-all ${activeView === 'wsm'
             ? 'bg-primary-600 text-white shadow'
@@ -270,19 +285,7 @@ export function ResultsStep() {
         >
           <span className="text-sm font-bold">WSM</span>
           <span className={`text-xs mt-0.5 ${activeView === 'wsm' ? 'text-primary-100' : 'text-slate-400'}`}>
-            Weighted Sum Model
-          </span>
-        </button>
-        <button
-          onClick={() => setActiveView('topsis')}
-          className={`flex-1 flex flex-col items-center py-3 px-4 rounded-lg transition-all ${activeView === 'topsis'
-            ? 'bg-violet-600 text-white shadow'
-            : 'text-slate-600 hover:bg-slate-100'
-            }`}
-        >
-          <span className="text-sm font-bold">TOPSIS</span>
-          <span className={`text-xs mt-0.5 ${activeView === 'topsis' ? 'text-violet-100' : 'text-slate-400'}`}>
-            Closeness to Ideal
+            Raw Weighted Score (Secondary)
           </span>
         </button>
       </div>
@@ -1010,39 +1013,39 @@ export function ResultsStep() {
       {/* Algorithm Agreement Analysis - Show for both views */}
       {topsisResult && (
         <div className={`rounded-xl p-5 mb-6 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
-            ? 'bg-green-50 border-2 border-green-300'
-            : topsisResult.rankAgreement.level === 'moderate'
-              ? 'bg-blue-50 border-2 border-blue-300'
-              : 'bg-amber-50 border-2 border-amber-300'
+          ? 'bg-green-50 border-2 border-green-300'
+          : topsisResult.rankAgreement.level === 'moderate'
+            ? 'bg-blue-50 border-2 border-blue-300'
+            : 'bg-amber-50 border-2 border-amber-300'
           }`}>
           <div className="flex items-start">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
-                ? 'bg-green-200'
-                : topsisResult.rankAgreement.level === 'moderate'
-                  ? 'bg-blue-200'
-                  : 'bg-amber-200'
+              ? 'bg-green-200'
+              : topsisResult.rankAgreement.level === 'moderate'
+                ? 'bg-blue-200'
+                : 'bg-amber-200'
               }`}>
               <BarChart3 className={`w-5 h-5 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
-                  ? 'text-green-700'
-                  : topsisResult.rankAgreement.level === 'moderate'
-                    ? 'text-blue-700'
-                    : 'text-amber-700'
+                ? 'text-green-700'
+                : topsisResult.rankAgreement.level === 'moderate'
+                  ? 'text-blue-700'
+                  : 'text-amber-700'
                 }`} />
             </div>
             <div className="flex-1">
               <h4 className={`font-semibold text-lg ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
-                  ? 'text-green-900'
-                  : topsisResult.rankAgreement.level === 'moderate'
-                    ? 'text-blue-900'
-                    : 'text-amber-900'
+                ? 'text-green-900'
+                : topsisResult.rankAgreement.level === 'moderate'
+                  ? 'text-blue-900'
+                  : 'text-amber-900'
                 }`}>
                 Algorithm Agreement: {topsisResult.rankAgreement.level.charAt(0).toUpperCase() + topsisResult.rankAgreement.level.slice(1)}
               </h4>
               <p className={`mt-2 text-sm ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
-                  ? 'text-green-800'
-                  : topsisResult.rankAgreement.level === 'moderate'
-                    ? 'text-blue-800'
-                    : 'text-amber-800'
+                ? 'text-green-800'
+                : topsisResult.rankAgreement.level === 'moderate'
+                  ? 'text-blue-800'
+                  : 'text-amber-800'
                 }`}>
                 {topsisResult.rankAgreement.interpretation}
               </p>
@@ -1095,9 +1098,9 @@ export function ResultsStep() {
                   {Object.entries(practicalAdvice.useCaseFit).map(([useCase, rating]) => (
                     <div key={useCase} className="text-center">
                       <div className={`text-2xl mb-1 ${rating === 'excellent' ? 'text-green-600' :
-                          rating === 'good' ? 'text-blue-600' :
-                            rating === 'fair' ? 'text-amber-600' :
-                              'text-red-600'
+                        rating === 'good' ? 'text-blue-600' :
+                          rating === 'fair' ? 'text-amber-600' :
+                            'text-red-600'
                         }`}>
                         {rating === 'excellent' ? '🌟' :
                           rating === 'good' ? '👍' :
@@ -1105,9 +1108,9 @@ export function ResultsStep() {
                       </div>
                       <div className="text-xs font-medium text-slate-700 capitalize">{useCase}</div>
                       <div className={`text-xs capitalize ${rating === 'excellent' ? 'text-green-700' :
-                          rating === 'good' ? 'text-blue-700' :
-                            rating === 'fair' ? 'text-amber-700' :
-                              'text-red-700'
+                        rating === 'good' ? 'text-blue-700' :
+                          rating === 'fair' ? 'text-amber-700' :
+                            'text-red-700'
                         }`}>
                         {rating}
                       </div>
@@ -1124,21 +1127,21 @@ export function ResultsStep() {
                     <div
                       key={suggestion.id}
                       className={`p-4 rounded-lg border-l-4 ${suggestion.category === 'deal-breaker'
-                          ? 'bg-red-50 border-red-500'
-                          : suggestion.category === 'consideration'
-                            ? 'bg-amber-50 border-amber-500'
-                            : suggestion.category === 'alternative'
-                              ? 'bg-blue-50 border-blue-500'
-                              : 'bg-green-50 border-green-500'
+                        ? 'bg-red-50 border-red-500'
+                        : suggestion.category === 'consideration'
+                          ? 'bg-amber-50 border-amber-500'
+                          : suggestion.category === 'alternative'
+                            ? 'bg-blue-50 border-blue-500'
+                            : 'bg-green-50 border-green-500'
                         }`}
                     >
                       <div className="flex items-start">
                         <span className="text-2xl mr-3">{suggestion.icon}</span>
                         <div className="flex-1">
                           <h5 className={`font-semibold mb-1 ${suggestion.category === 'deal-breaker' ? 'text-red-900' :
-                              suggestion.category === 'consideration' ? 'text-amber-900' :
-                                suggestion.category === 'alternative' ? 'text-blue-900' :
-                                  'text-green-900'
+                            suggestion.category === 'consideration' ? 'text-amber-900' :
+                              suggestion.category === 'alternative' ? 'text-blue-900' :
+                                'text-green-900'
                             }`}>
                             {suggestion.title}
                           </h5>
