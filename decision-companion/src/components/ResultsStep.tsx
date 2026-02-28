@@ -64,11 +64,11 @@ export function ResultsStep() {
         const analysisResult = engine.analyze();
         // Run TOPSIS in parallel using the same engine
         const topsis = engine.runTOPSIS(analysisResult.results);
-        
+
         // Run Practical Advisor
         const advisor = new PracticalAdvisor(problem, analysisResult, topsis);
         const advice = advisor.advise();
-        
+
         setResult(analysisResult);
         setTopsisResult(topsis);
         setPracticalAdvice(advice);
@@ -201,8 +201,8 @@ export function ResultsStep() {
                 <h2 className="text-3xl font-bold mt-1">{result.results[0].optionName}</h2>
                 <div className="flex items-center mt-2">
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${result.recommendation.confidence === 'high' ? 'bg-green-500/30 text-green-100' :
-                      result.recommendation.confidence === 'medium' ? 'bg-yellow-500/30 text-yellow-100' :
-                        'bg-red-500/30 text-red-100'
+                    result.recommendation.confidence === 'medium' ? 'bg-yellow-500/30 text-yellow-100' :
+                      'bg-red-500/30 text-red-100'
                     }`}>
                     {result.recommendation.confidence.charAt(0).toUpperCase() + result.recommendation.confidence.slice(1)} Confidence
                   </span>
@@ -410,7 +410,7 @@ export function ResultsStep() {
 
           {/* Improved Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            
+
             {/* 1. Overall Scores - Horizontal Bar Chart */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <h3 className="font-semibold text-slate-700 mb-2 flex items-center">
@@ -425,7 +425,7 @@ export function ResultsStep() {
                   <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} width={120} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px' }}
-                    formatter={(value: number) => [`${value.toFixed(1)}%`, 'Score']}
+                    formatter={(value: number | undefined) => [`${(value ?? 0).toFixed(1)}%`, 'Score']}
                   />
                   <Bar dataKey="score" radius={[0, 8, 8, 0]}>
                     {chartData.map((entry, index) => (
@@ -454,7 +454,7 @@ export function ResultsStep() {
                       const cs = r.criteriaScores.find(c => c.criterionId === criterion.id);
                       return cs?.normalizedScore || 0;
                     }));
-                    
+
                     return (
                       <div key={criterion.id}>
                         <div className="flex items-center justify-between mb-2">
@@ -466,7 +466,7 @@ export function ResultsStep() {
                             const cs = opt.criteriaScores.find(c => c.criterionId === criterion.id);
                             const score = cs?.normalizedScore || 0;
                             const isMax = score === maxScore;
-                            
+
                             return (
                               <div key={opt.optionId} className="flex items-center gap-2">
                                 <span className="text-xs text-slate-600 w-24 truncate">{opt.optionName}</span>
@@ -578,13 +578,13 @@ export function ResultsStep() {
             <ResponsiveContainer width="100%" height={400}>
               <RadarChart data={radarData}>
                 <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis 
-                  dataKey="criterion" 
-                  tick={{ fill: '#64748b', fontSize: 11 }} 
+                <PolarAngleAxis
+                  dataKey="criterion"
+                  tick={{ fill: '#64748b', fontSize: 11 }}
                 />
-                <PolarRadiusAxis 
-                  domain={[0, 100]} 
-                  tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                <PolarRadiusAxis
+                  domain={[0, 100]}
+                  tick={{ fill: '#94a3b8', fontSize: 10 }}
                   angle={90}
                 />
                 {result.results.slice(0, 3).map((r, i) => (
@@ -599,9 +599,9 @@ export function ResultsStep() {
                   />
                 ))}
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                  formatter={(value: number) => `${value.toFixed(0)}%`}
+                  formatter={(value: number | undefined) => `${(value ?? 0).toFixed(0)}%`}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -855,7 +855,7 @@ export function ResultsStep() {
 
             {/* TOPSIS Graphs - Same structure as WSM but with TOPSIS data */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              
+
               {/* 1. Closeness Coefficient Chart */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h3 className="font-semibold text-slate-700 mb-2 flex items-center">
@@ -864,13 +864,13 @@ export function ResultsStep() {
                 </h3>
                 <p className="text-xs text-slate-500 mb-4">Distance from ideal solution (higher is better)</p>
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart 
+                  <BarChart
                     data={topsisResult.results.map((r, i) => ({
                       name: r.optionName,
                       score: Math.round(r.closenessCoefficient * 1000) / 10,
                       fill: COLORS[i % COLORS.length],
-                    }))} 
-                    layout="vertical" 
+                    }))}
+                    layout="vertical"
                     margin={{ left: 20 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -878,7 +878,7 @@ export function ResultsStep() {
                     <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} width={120} />
                     <Tooltip
                       contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px' }}
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, 'CC']}
+                      formatter={(value: number | undefined) => [`${(value ?? 0).toFixed(1)}%`, 'CC']}
                     />
                     <Bar dataKey="score" radius={[0, 8, 8, 0]}>
                       {topsisResult.results.map((entry, index) => (
@@ -971,13 +971,13 @@ export function ResultsStep() {
               <ResponsiveContainer width="100%" height={400}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#e2e8f0" />
-                  <PolarAngleAxis 
-                    dataKey="criterion" 
-                    tick={{ fill: '#64748b', fontSize: 11 }} 
+                  <PolarAngleAxis
+                    dataKey="criterion"
+                    tick={{ fill: '#64748b', fontSize: 11 }}
                   />
-                  <PolarRadiusAxis 
-                    domain={[0, 100]} 
-                    tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                  <PolarRadiusAxis
+                    domain={[0, 100]}
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
                     angle={90}
                   />
                   {topsisResult.results.slice(0, 3).map((r, i) => {
@@ -995,9 +995,9 @@ export function ResultsStep() {
                     );
                   })}
                   <Legend wrapperStyle={{ fontSize: '12px' }} />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                    formatter={(value: number) => `${value.toFixed(0)}%`}
+                    formatter={(value: number | undefined) => `${(value ?? 0).toFixed(0)}%`}
                   />
                 </RadarChart>
               </ResponsiveContainer>
@@ -1009,46 +1009,41 @@ export function ResultsStep() {
 
       {/* Algorithm Agreement Analysis - Show for both views */}
       {topsisResult && (
-        <div className={`rounded-xl p-5 mb-6 ${
-          topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
+        <div className={`rounded-xl p-5 mb-6 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
             ? 'bg-green-50 border-2 border-green-300'
             : topsisResult.rankAgreement.level === 'moderate'
               ? 'bg-blue-50 border-2 border-blue-300'
               : 'bg-amber-50 border-2 border-amber-300'
-        }`}>
+          }`}>
           <div className="flex items-start">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${
-              topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
                 ? 'bg-green-200'
                 : topsisResult.rankAgreement.level === 'moderate'
                   ? 'bg-blue-200'
                   : 'bg-amber-200'
-            }`}>
-              <BarChart3 className={`w-5 h-5 ${
-                topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
+              }`}>
+              <BarChart3 className={`w-5 h-5 ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
                   ? 'text-green-700'
                   : topsisResult.rankAgreement.level === 'moderate'
                     ? 'text-blue-700'
                     : 'text-amber-700'
-              }`} />
+                }`} />
             </div>
             <div className="flex-1">
-              <h4 className={`font-semibold text-lg ${
-                topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
+              <h4 className={`font-semibold text-lg ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
                   ? 'text-green-900'
                   : topsisResult.rankAgreement.level === 'moderate'
                     ? 'text-blue-900'
                     : 'text-amber-900'
-              }`}>
+                }`}>
                 Algorithm Agreement: {topsisResult.rankAgreement.level.charAt(0).toUpperCase() + topsisResult.rankAgreement.level.slice(1)}
               </h4>
-              <p className={`mt-2 text-sm ${
-                topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
+              <p className={`mt-2 text-sm ${topsisResult.rankAgreement.level === 'full' || topsisResult.rankAgreement.level === 'high'
                   ? 'text-green-800'
                   : topsisResult.rankAgreement.level === 'moderate'
                     ? 'text-blue-800'
                     : 'text-amber-800'
-              }`}>
+                }`}>
                 {topsisResult.rankAgreement.interpretation}
               </p>
               <div className="mt-3 flex items-center gap-4">
@@ -1089,33 +1084,31 @@ export function ResultsStep() {
             </div>
             {showAdvice ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </button>
-          
+
           {showAdvice && (
             <div className="px-6 pb-6 border-t border-slate-200 pt-4">
-              
+
               {/* Use Case Fit */}
               <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-violet-50 rounded-lg">
                 <h4 className="font-semibold text-slate-800 mb-3">Use Case Fit</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {Object.entries(practicalAdvice.useCaseFit).map(([useCase, rating]) => (
                     <div key={useCase} className="text-center">
-                      <div className={`text-2xl mb-1 ${
-                        rating === 'excellent' ? 'text-green-600' :
-                        rating === 'good' ? 'text-blue-600' :
-                        rating === 'fair' ? 'text-amber-600' :
-                        'text-red-600'
-                      }`}>
+                      <div className={`text-2xl mb-1 ${rating === 'excellent' ? 'text-green-600' :
+                          rating === 'good' ? 'text-blue-600' :
+                            rating === 'fair' ? 'text-amber-600' :
+                              'text-red-600'
+                        }`}>
                         {rating === 'excellent' ? '🌟' :
-                         rating === 'good' ? '👍' :
-                         rating === 'fair' ? '👌' : '👎'}
+                          rating === 'good' ? '👍' :
+                            rating === 'fair' ? '👌' : '👎'}
                       </div>
                       <div className="text-xs font-medium text-slate-700 capitalize">{useCase}</div>
-                      <div className={`text-xs capitalize ${
-                        rating === 'excellent' ? 'text-green-700' :
-                        rating === 'good' ? 'text-blue-700' :
-                        rating === 'fair' ? 'text-amber-700' :
-                        'text-red-700'
-                      }`}>
+                      <div className={`text-xs capitalize ${rating === 'excellent' ? 'text-green-700' :
+                          rating === 'good' ? 'text-blue-700' :
+                            rating === 'fair' ? 'text-amber-700' :
+                              'text-red-700'
+                        }`}>
                         {rating}
                       </div>
                     </div>
@@ -1130,25 +1123,23 @@ export function ResultsStep() {
                   {practicalAdvice.suggestions.map((suggestion) => (
                     <div
                       key={suggestion.id}
-                      className={`p-4 rounded-lg border-l-4 ${
-                        suggestion.category === 'deal-breaker'
+                      className={`p-4 rounded-lg border-l-4 ${suggestion.category === 'deal-breaker'
                           ? 'bg-red-50 border-red-500'
                           : suggestion.category === 'consideration'
                             ? 'bg-amber-50 border-amber-500'
                             : suggestion.category === 'alternative'
                               ? 'bg-blue-50 border-blue-500'
                               : 'bg-green-50 border-green-500'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start">
                         <span className="text-2xl mr-3">{suggestion.icon}</span>
                         <div className="flex-1">
-                          <h5 className={`font-semibold mb-1 ${
-                            suggestion.category === 'deal-breaker' ? 'text-red-900' :
-                            suggestion.category === 'consideration' ? 'text-amber-900' :
-                            suggestion.category === 'alternative' ? 'text-blue-900' :
-                            'text-green-900'
-                          }`}>
+                          <h5 className={`font-semibold mb-1 ${suggestion.category === 'deal-breaker' ? 'text-red-900' :
+                              suggestion.category === 'consideration' ? 'text-amber-900' :
+                                suggestion.category === 'alternative' ? 'text-blue-900' :
+                                  'text-green-900'
+                            }`}>
                             {suggestion.title}
                           </h5>
                           <p className="text-sm text-slate-700 mb-2">{suggestion.message}</p>

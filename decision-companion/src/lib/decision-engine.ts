@@ -14,6 +14,7 @@
 
 import {
   DecisionProblem,
+  Option,
   OptionResult,
   DecisionResult,
   Recommendation,
@@ -209,7 +210,7 @@ export class DecisionEngine {
    * Returns filtered options and metadata about what was filtered
    */
   private applyFilters(): {
-    filteredOptions: typeof this.problem.options;
+    filteredOptions: Option[];
     filteredOutCount: number;
     filteredOutReasons: string[];
   } {
@@ -271,13 +272,13 @@ export class DecisionEngine {
 
     let confidence: 'high' | 'medium' | 'low' = 'medium';
     let confidenceReason = '';
-    
+
     if (results.length > 1) {
       const diff = winner.finalScore - runnerUp.finalScore;
       const avg = (winner.finalScore + runnerUp.finalScore) / 2;
       const relDiff = avg > 0 ? diff / avg : 0;
       const percentDiff = relDiff * 100;
-      
+
       if (relDiff > 0.2) {
         confidence = 'high';
         confidenceReason = `Winner leads by ${percentDiff.toFixed(1)}% - clear advantage`;
