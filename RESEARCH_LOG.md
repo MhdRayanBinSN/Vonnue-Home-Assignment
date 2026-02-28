@@ -8,83 +8,93 @@
 
 | Platform | Usage | Query/Prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | Understand these problem statement and explain to a CSE student |
-| ChatGPT | Learning | Explain about decision companion system with example |
-
+| ChatGPT | Learning | understand these problem statement and explain to a CSE student |
+| ChatGPT | Learning | explain about decision companion system with example |
+| ChatGPT | Learning | understand these problem statement and explain to a experienced software engineer and a researcher |
 ### Feb 16
 
-| Platform | Usage | Query/Prompt |
+
+| platform | usage | query/prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | Do I need to create any kind of document before executing plan like SRS |
-| ChatGPT | Learning | Means SRS or approach doc or any other |
-| ChatGPT | Learning | Existing DSC that is already built and using |
-| ChatGPT | Learning | From that problem statement and requirements we need to select a specific domain or generalize method |
-| ChatGPT | Learning | Which is best for our current expectations |
+| chatgpt | learning | do i need to create any kind of documnt before executng plan like srs |
+| chatgpt | learning | means srs or approach doc or any other |
+| chatgpt | learning | existing dsc that is already built and using |
+| chatgpt | learning | from that problem statement and requirments we need to select a specific domain or generalize method |
+| chatgpt | learning | which is best for our current expectatons |
+`
 
-### Feb 17
 
-| Platform | Usage | Query/Prompt |
+### feb 17
+
+| platform | usage | query/prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | Give summary about the document that needed to build a DSC *(uploaded DSS.pdf)* |
-| ChatGPT | Learning | Existing projects that built |
+| chatgpt | learning | give summary about documnt needed to build dsc (uploaded dss.pdf) |
+| chatgpt | learning | existing projects built |
 
-### Feb 18
+### feb 18
 
-| Platform | Usage | Query/Prompt |
+| platform | usage | query/prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | Is backend needed for this project |
-| ChatGPT | Learning | Is decision tree or normal maths logic algos are best |
-| ChatGPT | Learning | List the algorithm and pros and cons |
-| Google | Learning | Decision companion system |
-| Google | Learning | Articles about DSS |
-| Google | Learning | Research papers decision support system |
-| YouTube | Learning | Decision companion system |
-| Stack Overflow | Learning | Decision companion system built for technical round in job interviews |
+| chatgpt | learning | is backend needed for project |
+| chatgpt | learning | is decision tree or normal maths logic algos best |
+| chatgpt | learning | list algorithm and pros and cons |
+| google | learning | decision companion systm |
+| google | learning | articles about dss |
+| google | learning | research papers decision support systm |
+| youtube | learning | decision companion systm |
+| stack overflow | learning | decision companion systm built for technical round in job interviews |
+
 
 ### Feb 19
 
-| Platform | Usage | Query/Prompt |
+| platform | usage | query/prompt |
 |----------|-------|--------------|
-| VS Code / Antigravity | Feature Building | Build a basic decision companion system with NextJs (requirements: Pleasing UI, Accept multiple options, Accept criteria with weights, Process and evaluate options, Provide ranked recommendation) |
-| VS Code | Debugging | Fix the errors in UI, I think it might be an importing issue |
-| VS Code | Feature Building | Optimize the code |
-| VS Code | Feature Building | Design a clean architecture separating: UI, decision engine, data handling - keep it modular and scalable |
-| VS Code | Documentation | Provide a conventional commit msg |
+| vs code | feature building | build a basic decision companion system with nextjs requirements: pleasing ui, accept multiple options, accept criteria with weights, process and evaluate options provide ranked recommendation |
+| vs code | debugging | fix the errors in ui, i think it might be an importing issue |
+| vs code | feature building | optimize the code |
+| vs code | feature building | design a clean architecture separating: ui, decision engine, data handling keep it modular and scalable |
+| vs code | documentation | provide a conventional commit msg |
+
 
 ### Feb 20
 
 | Platform | Usage | Query/Prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | What are the limitations of MCDM algorithms and when should they not be used |
-| ChatGPT | Learning | How do real companies implement decision support systems - case studies |
+| ChatGPT | Learning | what are the limitations of MCDM algorithms and when should they not be used |
+| ChatGPT | Learning | how do real companies implement decision support systems  case studies |
 
 ### Feb 21
 
 | Platform | Usage | Query/Prompt |
 |----------|-------|--------------|
-| ChatGPT | Learning | Trade-offs between simplicity and accuracy in weighted scoring models |
-| ChatGPT | Learning | Best practices for making algorithm results explainable to non-technical users |
-| ChatGPT | Learning | How to handle edge cases like equal scores or missing criteria values |
-| ChatGPT | Learning | Give the ideas of my research log for better arrangement and readability |
-| VS Code | Feature Building | How to create a professional research log with my existing research log, currently it is messy and difficult to insert updates |
-| VS Code | Feature Building | Can you convert these to Excel |
-| VS Code | Feature Building | In type and platform must be selectable and also automatically add these prompts to that log |
-| VS Code | Feature Building | Add above typed prompts to Excel and MD file |
+
+| ChatGPT | Learning | trade offs between simple and accurate scoring models |
+| ChatGPT | Learning | how to explain algo results to non tech users |
+| ChatGPT | Learning | how to handle same scores or missing values in the algo |
+| ChatGPT | Learning | give me ideas to organize my research log better |
+```markdown
+| VS Code | Feature Building | how to create a professional research log with my existing research log, currently it is messy and difficult to insert updates |
+| VS Code | Feature Building | can you convert these to Excel |
+| VS Code | Feature Building | in type and platform must be selectable and also automatically add these prompts to that log |
+| VS Code | Feature Building | add above typed prompts to Excel and MD file |
+```
 
 ### Feb 22
 
 | Platform | Usage | Query/Prompt |
 |----------|-------|--------------|
-| VS Code | Learning | What we done in this project - is it generalized or domain specific |
-| VS Code | Learning | What is MCDM algorithms, is there any other algorithm like these |
-| VS Code | Learning | I mean in DSC there is MCDM algorithm, is there any algorithm like MCDM |
-| VS Code | Learning | Is there any algorithm better than MCDM |
-| VS Code | Learning | give the calcuation example of wsm |
-| VS Code | Learning | give the comparison and benfits of wsm with AHP |
-| VS Code | Learning | Should we keep it domain-specific  or generalized? |
-| VS Code | Feature Building | Implement laptop selection with use-case presets Software Dev, Gaming, Business, Student, Creative, Custom |
-| VS Code | Debugging | Why do presets still require weight adjustment step? Fix flow to skip weights for presets |
-| VS Code | Feature Building | Don't use emojis, use premium icons and SVG images (Lucide icons) |
+```markdown
+| vs code | learning | what we done in this project - is it generalized or domain specific |
+| vs code | learning | what is mcdm algorithms, is there any other algorithm like these |
+| vs code | learning | i mean in dsc there is mcdm algorithm, is there any algorithm like mcdm |
+| vs code | learning | is there any algorithm better than mcdm |
+| vs code | learning | give the calcuation example of wsm |
+| vs code | learning | give the comparison and benfits of wsm with ahp |
+| vs code | learning | should we keep it domain-specific or generalized? |
+| vs code | feature building | implement laptop selection with use-case presets software dev, gaming, business, student, creative, custom |
+| vs code | debugging | why do presets still require weight adjustment step? fix flow to skip weights for presets |
+| vs code | feature building | don't use emojis, use premium icons and svg images (lucide icons) |
+```
 
 ### Feb 23 & 24
 
@@ -139,6 +149,25 @@
 | Google | Learning | Database for cpu and gpu benchmarks |
 | Google | Learning | Topsis algorithm explanation |
 
+### Feb 27
+
+| Platform | Usage | Query/Prompt |
+|----------|-------|--------------|
+| Google | Learning | Price performance ratio calculation methods |
+| Google | Learning | how to check rank correlation between two arrays in js |
+| Google | Learning | kendall tau implemention js |
+| Google | Learning | wsm vs topsis when they disagree what to do |
+| google | Learning | what is good wigth for gaming laptop in kg |
+| google | Learning | batterly life for ultrabook  |
+| vscode | Building | in my results step wsm is saying lenovo is winner but topsis is saying macbook is winner. how to handle this in ui without confusing user? i need to show a warning that algorithms disagree but still give a clear action to take, maybe tell them to compare both side by side because score diffrence is very tight |
+| vscode | Building | im getting typescript error in ResultsStep.tsx ppty winnerareement does not exist on type TopsisResult | null'. |
+| vscode | Building | i need a logic function to check budget. if user selected 50k budget and the winning laptop is 48k, i want to trigger a budget maxed warning |
+| vscode | Building | implement these  |
+| vscode | Building | possible graphs can be used in the resul section of dsc |
+| vscode | Building | which is the best approach in a dsc is it wsm and topsis show different  or show only topsis| 
+| vscode | Building | can we use wsm and topsis to show different results and let user choose which one to follow | 
+| 
+
 ---
 
 ## References
@@ -168,48 +197,8 @@
 |Show raw error message from API in the UI | Modified | Replaced with clean user-friendly error message instead |
 | Auto-fill all 12 specs silently without feedback | Modified | Added loading state and progress bar to show which specs are being filled |
 ---
-
-
-
-
-### Feb 27
-
-| Platform | Usage | Query/Prompt |
-|----------|-------|--------------|
-| ChatGPT | Learning | How to implement budget constraints in MCDM algorithms |
-| ChatGPT | Learning | Should budget be a weighted criterion or a hard filter |
-| ChatGPT | Learning | TDP impact on laptop performance and battery life |
-| ChatGPT | Learning | How to calculate price-to-performance ratio for hardware |
-| ChatGPT | Learning | Derived metrics in decision support systems |
-| VS Code | Feature Building | Implement budget pre-filter that removes options before running algorithms |
-| VS Code | Feature Building | Add TDP as independent criterion separate from GPU scores |
-| VS Code | Feature Building | Auto-calculate price-to-performance ratio in decision engine |
-| VS Code | Refactoring | Rebalance all preset weights to accommodate new TDP and P2P criteria |
-| VS Code | Feature Building | Add budget input field to PresetSelector component |
-| VS Code | Feature Building | Display filtered options count in ResultsStep |
-| VS Code | Documentation | Create comprehensive ACCURACY_IMPROVEMENTS.md document |
-| Google | Learning | MCDM budget constraints best practices |
-| Google | Learning | TDP vs GPU performance laptop benchmarks |
-| Google | Learning | Price performance ratio calculation methods |
+---
 
 ---
 
-## Updated References (Feb 27)
 
-| Source | Link | How It Helped |
-|--------|------|---------------|
-| MCDM Constraints Research | Academic papers | Budget filtering and threshold constraints in MCDM |
-| TDP Technical Specs | Hardware documentation | Understanding thermal design power impact on performance |
-| Value Analysis Methods | Engineering economics | Price-to-performance ratio calculation methodologies |
-
----
-
-## Additional Accepted/Rejected Decisions (Feb 27)
-
-| AI Suggestion | Action | Reason |
-|---------------|--------|--------|
-| Make budget a weighted criterion | Rejected | Budget should be a hard filter, not a soft preference |
-| Keep TDP hidden in GPU names | Rejected | Extracted as independent criterion for better math accuracy |
-| Manual price-to-performance calculation | Modified | Auto-calculated as derived metric to reduce user effort |
-| Add minimum threshold filters | Deferred | Good idea but out of scope for current deadline |
-| Calculate real PPI for resolution | Deferred | Would improve accuracy but requires more complex calculations |
