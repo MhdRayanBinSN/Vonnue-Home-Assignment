@@ -167,7 +167,7 @@ export function ResultsStep() {
   return (
     <div className="animate-fade-in">
       {/* Filtered Options Info */}
-      {result.filteredOutCount && result.filteredOutCount > 0 && (
+      {(result.filteredOutCount ?? 0) > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
           <div className="flex items-start">
             <AlertTriangle className="w-5 h-5 text-amber-600 mr-3 mt-0.5 flex-shrink-0" />
