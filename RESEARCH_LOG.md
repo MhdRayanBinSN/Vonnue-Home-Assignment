@@ -166,7 +166,22 @@
 | vscode | Building | possible graphs can be used in the resul section of dsc |
 | vscode | Building | which is the best approach in a dsc is it wsm and topsis show different  or show only topsis| 
 | vscode | Building | can we use wsm and topsis to show different results and let user choose which one to follow | 
-| 
+|
+
+### Feb 28
+
+| Platform | Usage | Query/Prompt |
+|----------|-------|--------------|
+| Google | Learning | draw.io activity diagram UML notation |
+| Google | Learning | eraser.io diagram drawing tool |
+| Google | Learning | RAD document template for software projects |
+| Google | Learning | decision logic diagram best practices |
+| Google | Learning | how to create UML activity diagram with nested loops |
+| VS Code | Building |analze our logic and documentation  create component diagram for decision companion system |
+| VS Code | Building | based on our logic and documentation generate decision logic flowchart with all nested conditions |
+| VS Code | Building | from logic and documentation in docs and source code create activity diagram with draw.io XML format |
+| VS Code | Building | generate mermaid code for activity diagram |
+| VS Code | Building | generate decision logic diagram as PNG |
 
 ---
 
@@ -178,6 +193,9 @@
 | Indeed Career Guide | https://www.indeed.com/career-advice/career-development/decision-support-system-examples | Real-world DSS examples |
 | GitHub Repository | https://github.com/igaribay/DSSwithPython | Code reference for DSS implementation |
 | DSS.pdf | Local document | Comprehensive theory on decision support systems, MCDM algorithms |
+| IBM Blueworks Live | https://www.ibm.com/docs/en/blueworks-live?topic=decisions-decision-diagrams | Understanding decision diagram notation and best practices |
+| ResearchGate | https://www.researchgate.net/figure/Flow-Chart-of-Decision-Logic_fig2_4325447 | Reference for decision logic flow chart structure |
+| The Decision Lab | https://thedecisionlab.com/reference-guide/computer-science/decision-support-systems | Comprehensive guide on decision support systems in computer science |
 
 ---
 
