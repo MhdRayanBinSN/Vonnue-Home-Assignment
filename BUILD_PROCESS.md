@@ -846,23 +846,150 @@ Now, when a user selects a CPU from the dropdown (e.g., "AMD Ryzen 9 / Intel i9"
 
 ---
 
-### 19. The Evolution of the Algorithm: Why We Moved from WSM to TOPSIS
+### 19. Algorithm Design: Why WSM is Primary and TOPSIS is Validation
 
-**The Problem with WSM (What I Found):**
-While WSM (Weighted Sum Model) worked fine for a simple prototype with 3 to 5 basic criteria, it completely failed when I scaled the system up to 12 diverse criteria. 
-1. **The "Average" Problem:** WSM is strictly linear (adding up normalized scores). If a laptop gets an amazing 10/10 in CPU but a terrible 1/10 in Battery, WSM will just average it out. It doesn't heavily penalize a catastrophic failure in one specific category. 
-2. **The "Scale" Difference:** Linear min-max normalization in WSM struggles when mixing massive integers (like a Rs. 1,50,000 price or a 25,000 benchmark score) alongside tiny categorical values (like a 3-tier build quality).
+#### The Strategic Decision: WSM as Primary Engine
 
-**The Intelligent Solution: Implementing TOPSIS**
-I realized I needed a geometric algorithm instead of a linear one. I researched and implemented **TOPSIS** (Technique for Order of Preference by Similarity to Ideal Solution). 
+**Why I Chose WSM as the Primary Algorithm:**
 
-**How My TOPSIS Math Works:**
-Instead of just adding scores, TOPSIS measures the literal "distance" a laptop is from the concept of a "Perfect" and "Terrible" machine.
+1. **Simplicity and Explainability**
+   - WSM is a weighted sum: `Score = Σ(weight × normalized_score)`
+   - Users can easily understand: "This laptop scored 75% overall"
+   - Transparent: Each criterion's contribution is visible
+   - Matches human intuition: "I want 30% performance, 25% price, 20% battery..."
 
-1. **Vector Normalization:** Instead of basic min-max, I divided each value by the square root of the sum of squares ($X_{ij} / \sqrt{\sum X_{ij}^2}$). This preserves the exact ratio of distances between numbers, regardless of if the number is Rs.100,000 or a 1-10 rating.
-2. **Finding the Ideals:** The code dynamically scans all loaded laptops and creates a "Positive Ideal Solution" ($A^*$) by merging all the best specs into a fake super-laptop, and a "Negative Ideal Solution" ($A^-$) by merging all the worst specs.
-3. **Euclidean Distance Formula:** I used Euclidean geometry ($\sqrt{\sum(x - y)^2}$) to measure exactly how far every single real laptop is from both the "Perfect" and "Worst" ideals.
-4. **Calculated Closeness:** The final rank is based on the Closeness Coefficient: $C_i = D^- / (D^+ + D^-)$. This means a laptop only wins if it is mathematically closest to the best *and* furthest from the worst. It brilliantly solves the WSM "Average" problem. 
+2. **User Mental Model Alignment**
+   - When users set weights, they expect compensatory trade-offs
+   - "I'll accept lower battery for better performance" → WSM handles this naturally
+   - Linear aggregation matches how people think about priorities
+
+3. **Computational Efficiency**
+   - Simple min-max normalization + weighted sum
+   - Fast enough to run sensitivity analysis (50+ scenarios)
+   - No complex distance calculations needed
+
+4. **Industry Standard for Consumer Decisions**
+   - Most product comparison sites use WSM-like scoring
+   - Users are familiar with "overall score" concept
+   - Easier to defend recommendations to stakeholders
+
+**The Critical Problems WSM Cannot Solve:**
+
+Despite being primary, WSM has fundamental limitations:
+
+1. **The "Compensation Trap"**
+   - A laptop with RTX 4090 (GPU: 10/10) but 2-hour battery (1/10) gets averaged out
+   - WSM says: "8/10 overall, great laptop!"
+   - Reality: Unusable for students who need 8+ hours battery
+   - **Problem:** Catastrophic weakness in one criterion gets hidden by strengths
+
+2. **The "Extreme Outlier" Problem**
+   - Laptop A: Balanced (CPU: 7, GPU: 7, Battery: 7, Price: 7) → WSM: 7.0
+   - Laptop B: Extreme (CPU: 10, GPU: 10, Battery: 2, Price: 2) → WSM: 6.0
+   - WSM ranks A higher, but some users might prefer B's extreme performance
+   - **Problem:** WSM penalizes specialization, rewards mediocrity
+
+3. **The "Scale Mixing" Issue**
+   - Price: ₹150,000 (huge number)
+   - Battery: 8 hours (small number)
+   - Build Quality: 3/5 (tiny number)
+   - Min-max normalization works, but loses relative importance of magnitude
+   - **Problem:** A ₹10K price difference feels the same as 1-hour battery difference after normalization
+
+4. **The "No Veto" Problem**
+   - User says: "I MUST have 16GB RAM minimum"
+   - WSM can still recommend 8GB laptop if it's strong elsewhere
+   - **Problem:** Cannot enforce hard constraints (solved separately with filters)
+
+#### The Intelligent Solution: TOPSIS as Validation Layer
+
+**Why TOPSIS Solves These Critical Problems:**
+
+TOPSIS uses geometric distance instead of linear sum. This fundamentally changes the decision logic:
+
+**How TOPSIS Math Works:**
+
+1. **Vector Normalization (Not Min-Max)**
+   ```
+   normalized = value / √(Σ value²)
+   ```
+   - Preserves relative distances between values
+   - Handles mixed scales (₹150,000 vs 8 hours) better
+   - Less sensitive to outliers than min-max
+
+2. **Ideal Best and Ideal Worst**
+   - Creates hypothetical "perfect laptop" (A⁺): best value on every criterion
+   - Creates hypothetical "terrible laptop" (A⁻): worst value on every criterion
+   - Example:
+     - A⁺ = {CPU: 35000, GPU: 20000, Battery: 12h, Price: ₹30000}
+     - A⁻ = {CPU: 5000, GPU: 400, Battery: 3h, Price: ₹200000}
+
+3. **Euclidean Distance Calculation**
+   ```
+   D⁺ = √Σ(laptop_value - ideal_best)²
+   D⁻ = √Σ(laptop_value - ideal_worst)²
+   ```
+   - Measures how far each laptop is from perfect and terrible
+   - Geometric distance penalizes imbalance
+
+4. **Closeness Coefficient**
+   ```
+   CC = D⁻ / (D⁺ + D⁻)
+   ```
+   - Range: 0 to 1 (higher is better)
+   - Laptop wins if it's close to ideal AND far from worst
+   - **Key insight:** Being far from worst matters as much as being close to best
+
+**Critical Problems TOPSIS Solves:**
+
+1. **Penalizes Catastrophic Weaknesses**
+   - Laptop with 2-hour battery has large distance from ideal (12h)
+   - Even if GPU is perfect, the battery distance dominates
+   - TOPSIS ranks it lower than WSM would
+   - **Solution:** Balanced laptops win over extreme specialists
+
+2. **Rewards Consistency**
+   - Laptop A: All 7/10 → Small distances from ideal on all criteria
+   - Laptop B: Mix of 10/10 and 3/10 → Large distances on weak criteria
+   - TOPSIS prefers A (consistent), WSM might prefer B (high peaks)
+   - **Solution:** Identifies "safe" choices with no major flaws
+
+3. **Handles Scale Differences Better**
+   - Vector normalization preserves relative importance
+   - ₹10K price difference maintains its significance
+   - Not flattened by min-max like in WSM
+   - **Solution:** More accurate representation of real-world trade-offs
+
+4. **Cross-Validation**
+   - When WSM and TOPSIS agree → High confidence recommendation
+   - When they disagree → Reveals trade-off philosophy difference
+   - Kendall's Tau correlation measures agreement strength
+   - **Solution:** Users see both perspectives and choose their philosophy
+
+#### Why Dual Algorithm Approach is Superior
+
+**The Power of Disagreement:**
+
+When WSM says "Laptop A" but TOPSIS says "Laptop B", it reveals:
+- WSM winner: Better overall score, but might have weaknesses
+- TOPSIS winner: More balanced, fewer catastrophic flaws
+- User can choose based on their risk tolerance
+
+**Real Example from Testing:**
+```
+Scenario: Gaming laptop comparison
+- Laptop A: RTX 4080, i5-13500H, 4h battery, ₹140K
+- Laptop B: RTX 4060, i7-13700H, 8h battery, ₹95K
+
+WSM Result: A wins (GPU weight 30% dominates)
+TOPSIS Result: B wins (A's battery is too far from ideal)
+
+Interpretation:
+- Pure gamers (desktop replacement): Choose A (WSM)
+- Mobile gamers (LAN parties): Choose B (TOPSIS)
+```
+
+**Implementation: Strategy Pattern** 
 
 #### Refactoring Decision: The Strategy Pattern
 Initially, I placed all the TOPSIS mathematics inside the `decision-engine.ts` file. This was a bad approach because it made the file too big and complex (violating the Single Responsibility Principle). 

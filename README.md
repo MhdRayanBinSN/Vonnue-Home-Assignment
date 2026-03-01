@@ -216,11 +216,57 @@ I made a strategic decision to focus on laptop buying rather than building a gen
 
 **Choice:** Implement two algorithms with different mathematics
 
-**Trade-off:**
-- ✅ Gain: Cross-validation, edge case detection, increased confidence
-- ❌ Loss: 2× computation time, more code to maintain
+**Why WSM is Primary:**
+- Simple weighted sum: `Score = Σ(weight × normalized_score)`
+- Matches user mental model: "I want 30% performance, 25% price..."
+- Explainable: "This laptop scored 75% overall"
+- Compensatory: High GPU can offset low battery (user expects this)
+- Fast: Enables sensitivity analysis with 50+ scenarios
 
-**Why Worth It:** Validation is essential for production systems
+**Critical Problems WSM Cannot Solve:**
+
+1. **Compensation Trap**
+   - Laptop with RTX 4090 (10/10) but 2h battery (1/10) averages to 8/10
+   - WSM hides catastrophic weaknesses behind strengths
+   - Example: Gaming laptop unusable for students needing 8h battery
+
+2. **Extreme Outlier Blindness**
+   - Balanced laptop (all 7/10) vs Extreme laptop (mix of 10/10 and 3/10)
+   - WSM rewards balance, but some users prefer specialization
+   - Doesn't reveal trade-off philosophy
+
+3. **Scale Mixing Issues**
+   - ₹150,000 price vs 8-hour battery vs 3/5 build quality
+   - Min-max normalization flattens relative importance
+   - ₹10K price difference feels same as 1h battery difference
+
+**Why TOPSIS Solves These Problems:**
+
+- Uses geometric distance, not linear sum
+- Measures distance from ideal best AND ideal worst
+- Penalizes imbalance: Laptop must be close to perfect AND far from terrible
+- Vector normalization preserves scale relationships better
+- Rewards consistency over extreme specialization
+
+**When They Disagree (The Power of Dual Validation):**
+```
+Example: Gaming Laptop Comparison
+- Laptop A: RTX 4080, i5-13500H, 4h battery, ₹140K
+- Laptop B: RTX 4060, i7-13700H, 8h battery, ₹95K
+
+WSM Winner: A (GPU weight 30% dominates)
+TOPSIS Winner: B (A's battery too far from ideal)
+
+Interpretation:
+- Desktop replacement gamers → Choose A (WSM philosophy)
+- Mobile gamers (LAN parties) → Choose B (TOPSIS philosophy)
+```
+
+**Trade-off:**
+- ✅ Gain: Cross-validation, reveals trade-off philosophies, catches edge cases
+- ❌ Loss: 2× computation time, more code to maintain, users must understand both
+
+**Why Worth It:** Disagreement is information. When algorithms agree → high confidence. When they disagree → user chooses their risk tolerance (compensatory vs balanced).
 
 ### Decision 3: Real Benchmarks vs Arbitrary Scores
 
@@ -597,19 +643,58 @@ decision-companion/
 
 ## 7. What You Would Improve With More Time
 
-### 1. Additional Algorithms
+### 1. ML-Based Score Prediction
 
-**What:** Implement AHP (Analytic Hierarchy Process) and ELECTRE
+**What:** Use machine learning regression models to predict laptop performance scores from specs
 
-**Why:** More validation methods increase confidence
+**Why:** 
+- More accurate than hardcoded benchmarks
+- Can predict scores for new/unreleased models
+- Learns from real-world benchmark data patterns
+- Handles spec combinations not in database
 
-**How:** Add new classes implementing `IAlgorithm` interface
+**How:** 
+- Train regression model (Random Forest/XGBoost) on historical benchmark data
+- Features: CPU cores, clock speed, GPU CUDA cores, memory bandwidth, TDP
+- Target: 3DMark TimeSpy (GPU) and Cinebench R23 (CPU) scores
+- Deploy model as API endpoint or ONNX runtime in browser
 
-**Impact:** Users can choose from 4 different algorithms
+**Impact:** 
+- Eliminates need for hardcoded 180+ model database
+- Supports any laptop configuration
+- Automatically adapts to new hardware generations
 
-**Time Estimate:** 2-3 days
+**Time Estimate:** 1-2 weeks (data collection, training, integration)
 
-### 2. Database of Laptop Specs
+**Trade-off:** Model accuracy depends on training data quality, needs periodic retraining
+
+### 2. Advanced MCDM Algorithms
+
+**What:** Implement AHP (Analytic Hierarchy Process) and ELECTRE III
+
+**Why:** 
+- **AHP:** Better weight elicitation through pairwise comparisons (more intuitive than direct weighting)
+- **ELECTRE:** Non-compensatory method with outranking relations (handles incomparability)
+- More validation methods increase decision confidence
+- Different algorithms suit different decision philosophies
+
+**How:** 
+- AHP: Add pairwise comparison matrix UI, calculate consistency ratio, derive weights
+- ELECTRE: Implement concordance/discordance indices, outranking relations, kernel ranking
+- Both implement `IAlgorithm` interface for consistency
+
+**Impact:** 
+- Users can choose from 4 algorithms (WSM, TOPSIS, AHP, ELECTRE)
+- Cross-validation across compensatory and non-compensatory methods
+- Handles veto thresholds (ELECTRE) for critical criteria
+
+**Time Estimate:** 3-4 days (AHP: 1.5 days, ELECTRE: 2 days, UI integration: 0.5 days)
+
+**Technical Notes:**
+- AHP consistency ratio < 0.1 required for valid weights
+- ELECTRE needs preference/indifference/veto thresholds per criterion
+
+### 3. Database of Laptop Specs
 
 **What:** Build database with 1000+ laptop models and specs
 
@@ -623,7 +708,7 @@ decision-companion/
 
 **Trade-off:** Maintenance burden, data staleness
 
-### 3. User Accounts and Saved Decisions
+### 4. User Accounts and Saved Decisions
 
 **What:** Allow users to create accounts and save decision history
 
@@ -635,7 +720,7 @@ decision-companion/
 
 **Time Estimate:** 3-4 days
 
-### 4. Comparison History
+### 5. Comparison History
 
 **What:** Track all decisions made, show trends over time
 
@@ -647,7 +732,7 @@ decision-companion/
 
 **Time Estimate:** 2 days
 
-### 5. Export to PDF
+### 6. Export to PDF
 
 **What:** Generate professional PDF report of decision analysis
 
@@ -659,7 +744,7 @@ decision-companion/
 
 **Time Estimate:** 2 days
 
-### 6. Mobile App Version
+### 7. Mobile App Version
 
 **What:** Native iOS/Android app using React Native
 
@@ -671,7 +756,7 @@ decision-companion/
 
 **Time Estimate:** 2 weeks
 
-### 7. Collaborative Decision-Making
+### 8. Collaborative Decision-Making
 
 **What:** Multiple users can contribute to same decision
 
